@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>iTech · Campañas</title><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<script>
+  /* Puente con la planilla: llama a la aplicación web de Google (doPost) sin usar la sesión del navegador. */
+  window.WEB_APP = 'https://script.google.com/macros/s/AKfycbx6xtiGaSsybUtON2YD8BuGvP--nQrvzArVivpB-0aDZK5Dmeh_TRHl80_XkL8OqWdO/exec';
+  function portalFetch(k, a, args) {
+    return fetch(WEB_APP, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ k: k, a: a, args: args || [] }) })
+      .then(function (r) { if (!r.ok) throw new Error('No se pudo conectar (' + r.status + '). Probá de nuevo en un rato.'); return r.json(); })
+      .then(function (j) { if (!j.ok) throw new Error(j.error || 'Error'); return j.r; })
+      .catch(function (e) { if (e instanceof TypeError) throw new Error('No hay conexión con el sistema. Revisá internet y probá de nuevo.'); throw e; });
+  }
+  (function () {
+    function mk(ok, ko) {
+      return new Proxy({}, { get: function (t, p) {
+        if (p === 'withSuccessHandler') return function (f) { return mk(f, ko); };
+        if (p === 'withFailureHandler') return function (f) { return mk(ok, f); };
+        if (p === 'portalCall') return function (k, a, args) { portalFetch(k, a, args).then(function (r) { ok && ok(r); }, function (e) { ko && ko(e); }); };
+        return function () { ko && ko(new Error('Acción no disponible en la web.')); };
+      } });
+    }
+    window.google = { script: { host: { close: function () {} }, get run() { return mk(null, null); } } };
+  })();
+  var _q = new URLSearchParams(location.search);
+  var CLAVE = _q.get('k') || '';
+  try { if (CLAVE) localStorage.setItem('itech_portal_k', CLAVE); else CLAVE = localStorage.getItem('itech_portal_k') || ''; } catch (e) {}
+</script>
+<style>
+  :root { --pet:#000000; --petd:#111111; --rosa:#003366; --rosac:#DDDDDD; --dor:#003366; --bg:#F4F4F4; --tx:#222222; --mut:#6B6B6B; --err:#C0392B; --warn:#B9770E; --ok:#2E7D5B; --line:#DDDDDD; }
+  * { box-sizing: border-box; }
+  body { font: 13px/1.45 Arial, sans-serif; color: var(--tx); margin: 0; padding: 14px; }
+  h3 { margin: 4px 0 10px; color: var(--petd); font: bold 15px Arial, sans-serif; }
+  label { display: block; font-size: 12px; color: var(--mut); margin: 8px 0 3px; }
+  input[type=text], input[type=email], input[type=datetime-local], input[type=date], textarea, select {
+    width: 100%; padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px; font: 13px Arial, sans-serif; background: #fff; }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid #9AA9BA; border-color: var(--pet); }
+  button { font: bold 13px Arial, sans-serif; border-radius: 6px; padding: 8px 14px; border: 1px solid var(--pet); background: #fff; color: var(--petd); cursor: pointer; }
+  button.primary { background: var(--pet); color: #fff; }
+  button.danger { border-color: var(--err); color: var(--err); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.sm { padding: 3px 8px; font-size: 12px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > * { flex: 1; }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .msg { padding: 8px 10px; border-radius: 6px; margin: 8px 0; white-space: pre-wrap; }
+  .msg.err { background: #FBEAEA; color: var(--err); }
+  .msg.warn { background: #FDF3E1; color: var(--warn); }
+  .msg.ok { background: #E7F4EE; color: var(--ok); }
+  .muted { color: var(--mut); font-size: 12px; }
+  table.grid { border-collapse: collapse; width: 100%; }
+  table.grid th, table.grid td { border-bottom: 1px solid var(--line); padding: 5px 6px; text-align: left; vertical-align: top; font-size: 12px; }
+  table.grid th { background: var(--bg); color: var(--petd); }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; background: var(--bg); color: var(--petd); font-size: 11px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .kpi { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+  .kpi b { display: block; font-size: 18px; color: var(--petd); }
+  .kpi span { font-size: 11px; color: var(--mut); }
+  .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--pet); border-radius: 50%; animation: s 0.8s linear infinite; vertical-align: middle; }
+  @keyframes s { to { transform: rotate(360deg); } }
+</style>
+<style>
+  .emo-btn { padding: 4px 8px; font-size: 15px; line-height: 1; border-color: var(--line); }
+  .emo-pan { position: fixed; z-index: 9999; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.18);
+    padding: 8px; width: 300px; display: none; }
+  .emo-pan .g { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
+  .emo-pan button { border: 0; background: none; font-size: 20px; padding: 4px 0; cursor: pointer; border-radius: 4px; }
+  .emo-pan button:hover { background: var(--bg); }
+  .emo-pan .t { font-size: 11px; color: var(--mut); margin: 6px 0 2px; }
+  .locs label { display: inline-flex; align-items: center; gap: 4px; margin: 3px 10px 3px 0; font-size: 13px; color: var(--tx); }
+  .locs label.off { color: #aaa; text-decoration: line-through; }
+  .locs input { width: auto; }
+</style>
+<script>
+/* Emojis: botón 😀 junto a un campo, o en el editor, inserta en el último campo de texto donde estabas escribiendo. */
+(function () {
+  const GRUPOS = [
+    ['Promos', '🔥 💥 💸 🏷️ 🛍️ 🎁 🎉 🥳 ⭐ ✨ ⚡ 💯 🆕 ⏰ ‼️ 📣'],
+    ['Celulares', '📱 🔋 🔌 🎧 🛡️ 📦 🚚 🔧 💡 📸 ⌚ 💻'],
+    ['Fechas', '💐 🌷 🌸 🎀 ❤️ 💕 🤍 👩 👨 👶 🎄 🎅 ☀️ 🏖️ 🎓 🏆'],
+    ['Caras y manos', '👋 🙌 👏 💪 👉 👇 ✅ 😍 🤩 😉 😊 🙂 👀 🤔 🙏 ➡️ 📍']
+  ];
+  let ultimo = null, fijo = null, pan = null;
+  document.addEventListener('focusin', e => {
+    const t = e.target;
+    if (t && !t.disabled && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text'))) ultimo = t;
+  });
+  function insertar(em) {
+    const el = fijo || ultimo;
+    if (!el) { alert('Hacé clic primero en el campo donde querés el emoji.'); return; }
+    const a = el.selectionStart == null ? el.value.length : el.selectionStart, b = el.selectionEnd == null ? a : el.selectionEnd;
+    el.value = el.value.slice(0, a) + em + el.value.slice(b);
+    el.focus(); el.selectionStart = el.selectionEnd = a + em.length;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  function armar() {
+    pan = document.createElement('div'); pan.className = 'emo-pan';
+    pan.innerHTML = GRUPOS.map(g => '<div class="t">' + g[0] + '</div><div class="g">' +
+      g[1].split(' ').map(e => '<button type="button" data-e="' + e + '">' + e + '</button>').join('') + '</div>').join('');
+    pan.addEventListener('mousedown', e => e.preventDefault());
+    pan.addEventListener('click', e => { const b = e.target.closest('button[data-e]'); if (b) insertar(b.dataset.e); });
+    document.body.appendChild(pan);
+    document.addEventListener('mousedown', e => { if (pan.style.display === 'block' && !pan.contains(e.target) && !e.target.closest('.emo-btn')) pan.style.display = 'none'; });
+  }
+  /** Abre el panel. target = id o elemento fijo (opcional); sin target usa el último campo enfocado. */
+  window.emojiAbrir = function (btn, target) {
+    if (!pan) armar();
+    fijo = typeof target === 'string' ? document.getElementById(target) : (target || null);
+    if (pan.style.display === 'block') { pan.style.display = 'none'; return; }
+    const r = btn.getBoundingClientRect();
+    pan.style.display = 'block';
+    pan.style.left = Math.max(6, Math.min(r.left, window.innerWidth - 310)) + 'px';
+    pan.style.top = (r.bottom + 4 + 300 > window.innerHeight ? Math.max(6, r.top - 290) : r.bottom + 4) + 'px';
+  };
+  document.addEventListener('mousedown', e => { if (e.target.closest && e.target.closest('.emo-btn')) e.preventDefault(); });
+})();
+</script>
+
+<style>
+  body { padding: 0; background: #F4F4F4; }
+  .hdr { background: #000; color: #fff; padding: 14px 20px; display: flex; align-items: center; gap: 12px; }
+  .hdr b { font-size: 20px; letter-spacing: 3px; } .hdr span { color: #bbb; font-size: 13px; } .hdr .yo { margin-left: auto; color: #fff; font-size: 13px; }
+  .tabs { display: flex; gap: 4px; background: #fff; border-bottom: 1px solid var(--line); padding: 0 16px; overflow-x: auto; }
+  .tabs button { border: 0; border-bottom: 3px solid transparent; border-radius: 0; padding: 13px 14px; font-size: 14px; background: none; white-space: nowrap; }
+  .tabs button.on { border-bottom-color: #000; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 16px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; margin-bottom: 12px; }
+  .card h4 { margin: 0 0 4px; font-size: 16px; } .card .sub { color: var(--mut); font-size: 13px; }
+  .row2 { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background: #eee; color: #333; margin-left: 6px; vertical-align: middle; }
+  .b-Borrador { background: #FDF3E1; color: #8a5a00; } .b-Programada { background: #E7EEF9; color: #003366; } .b-Enviando { background: #E7F4EE; color: #2E7D5B; }
+  .b-Enviada { background: #000; color: #fff; } .b-Cancelada, .b-Pausada { background: #FBEAEA; color: #C0392B; }
+  .kp { display: inline-block; margin-right: 18px; font-size: 13px; color: var(--mut); } .kp b { color: #000; font-size: 18px; margin-right: 4px; }
+  .tpls { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px; max-height: 420px; overflow: auto; padding: 2px; }
+  .tpl { border: 1px solid var(--line); border-radius: 8px; padding: 10px; cursor: pointer; background: #fff; }
+  .tpl:hover { border-color: #000; } .tpl.on { border-color: #000; box-shadow: 0 0 0 2px #000; }
+  .tpl b { display: block; font-size: 13px; } .tpl small { color: var(--mut); font-size: 11px; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: flex-start; justify-content: center; padding: 30px 12px; overflow: auto; z-index: 50; }
+  .modal .box { background: #fff; border-radius: 12px; max-width: 520px; width: 100%; padding: 18px 20px; }
+  .bar { background: #eee; border-radius: 6px; height: 14px; overflow: hidden; } .bar i { display: block; height: 100%; background: #000; }
+  .big { font-size: 34px; font-weight: bold; } .vacio { text-align: center; color: var(--mut); padding: 40px 10px; }
+
+  /* ---------- Tutorial ---------- */
+  .tut { background: #fff; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+  .tut-top { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  .tut-top .prog { flex: 1; height: 6px; background: #eee; border-radius: 4px; overflow: hidden; } .tut-top .prog i { display: block; height: 100%; background: #000; transition: width .4s; }
+  .tut-top .n { font-size: 12px; color: var(--mut); white-space: nowrap; }
+  .slide { display: none; padding: 22px; gap: 26px; align-items: center; }
+  .slide.on { display: flex; animation: entra .45s ease; }
+  @keyframes entra { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+  .slide .demo { flex: 0 0 340px; height: 260px; background: #F4F4F4; border-radius: 12px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .slide .txt { flex: 1; }
+  .slide .ico { font-size: 44px; line-height: 1; } .slide h2 { margin: 8px 0 8px; font-size: 22px; }
+  .slide p { font-size: 15px; line-height: 1.55; margin: 6px 0; color: #222; }
+  .tip { background: #FFF8E1; border-left: 4px solid #E0A100; padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-top: 12px; }
+  .tut-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-top: 1px solid var(--line); }
+  .dots span { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: #ddd; margin: 0 3px; cursor: pointer; transition: all .3s; }
+  .dots span.on { background: #000; width: 22px; border-radius: 6px; }
+  .m-in { background: #fff; border: 2px solid #000; border-radius: 8px; padding: 10px 12px; font-size: 14px; width: 270px; white-space: nowrap; overflow: hidden; }
+  .typing { display: inline-block; overflow: hidden; white-space: nowrap; border-right: 2px solid #000; width: 0; vertical-align: bottom; }
+  .slide.on .typing { animation: tipea 2.6s steps(34) .4s forwards, cursor .7s step-end infinite; }
+  @keyframes tipea { to { width: 100%; } } @keyframes cursor { 50% { border-color: transparent; } }
+  .pulso { animation: pulso 1.4s ease-in-out infinite; } @keyframes pulso { 50% { transform: scale(1.12); box-shadow: 0 0 0 6px rgba(0,0,0,.08); } }
+  .salta { display: inline-block; animation: salta 1.2s ease-in-out infinite; } @keyframes salta { 50% { transform: translateY(-10px); } }
+  .saluda { display: inline-block; transform-origin: 70% 70%; animation: saluda 1.6s ease-in-out infinite; } @keyframes saluda { 0%,60%,100% { transform: rotate(0); } 10%,30% { transform: rotate(16deg); } 20%,40% { transform: rotate(-8deg); } }
+  .chk-a { display: flex; align-items: center; gap: 8px; font-size: 15px; margin: 7px 0; background: #fff; padding: 6px 12px; border-radius: 8px; width: 210px; }
+  .chk-a b { width: 20px; height: 20px; border: 2px solid #000; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; color: #fff; }
+  .slide.on .chk-a b { animation: tilda .3s forwards; } @keyframes tilda { to { background: #000; } }
+  .slide.on .chk-a b::after { content: '✓'; opacity: 0; animation: aparece .2s forwards; animation-delay: inherit; } @keyframes aparece { to { opacity: 1; } }
+  .mini-tpl { display: inline-block; width: 92px; height: 70px; background: #fff; border: 1px solid #ddd; border-radius: 8px; margin: 4px; font-size: 11px; padding: 8px; vertical-align: top; }
+  .slide.on .mini-tpl.elegida { animation: elige 2.2s ease .8s infinite; } @keyframes elige { 0%,100% { box-shadow: none; } 40%,70% { box-shadow: 0 0 0 3px #000; transform: scale(1.06); } }
+  .mail-mock { width: 210px; background: #fff; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.12); padding: 10px; font-size: 10px; }
+  .mail-mock .bk { background: #eee; border-radius: 4px; margin: 5px 0; height: 14px; position: relative; } .mail-mock .bk.t { background: #000; height: 18px; } .mail-mock .bk.img { height: 54px; background: #ddd; }
+  .mail-mock .bk.btn { width: 80px; margin: 6px auto; background: #000; height: 16px; border-radius: 4px; }
+  .slide.on .mail-mock .bk.edit { animation: edita 2.4s ease infinite; } @keyframes edita { 0%,100% { outline: 0; } 30%,70% { outline: 3px solid #E0A100; } }
+  .lapiz { position: absolute; font-size: 26px; } .slide.on .lapiz { animation: lapiz 2.4s ease-in-out infinite; } @keyframes lapiz { 0%,100% { right: 40px; top: 60px; } 50% { right: 90px; top: 112px; } }
+  .phone { width: 150px; height: 230px; background: #111; border-radius: 22px; padding: 12px 8px; position: relative; } .phone .scr { background: #fff; border-radius: 14px; height: 100%; overflow: hidden; position: relative; }
+  .notif { position: absolute; left: 6px; right: 6px; top: -60px; background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 7px; font-size: 10px; box-shadow: 0 4px 10px rgba(0,0,0,.15); }
+  .slide.on .notif { animation: baja 3s ease .5s infinite; } @keyframes baja { 0% { top: -60px; } 20%,80% { top: 10px; } 100% { top: -60px; } }
+  .cal { background: #fff; border-radius: 10px; padding: 10px; width: 190px; font-size: 12px; text-align: center; } .cal .g { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-top: 6px; }
+  .cal .g span { padding: 4px 0; border-radius: 4px; } .cal .g span.dia { background: #000; color: #fff; } .slide.on .cal .g span.dia { animation: pulso 1.4s infinite; }
+  .cohete { position: absolute; font-size: 34px; } .slide.on .cohete { animation: vuela 2.6s ease-in infinite; } @keyframes vuela { 0% { left: 20px; bottom: 10px; opacity: 1; } 80% { left: 280px; bottom: 210px; opacity: 1; } 100% { left: 300px; bottom: 230px; opacity: 0; } }
+  .barras { width: 270px; } .barras .l { display: flex; justify-content: space-between; font-size: 13px; margin-top: 10px; } .barras .b { height: 16px; background: #ddd; border-radius: 6px; overflow: hidden; }
+  .barras .b i { display: block; height: 100%; background: #000; width: 0; } .slide.on .barras .b i { animation: crece 1.6s ease forwards; } @keyframes crece { to { width: var(--w); } }
+  .firma-mock { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 14px 16px; width: 250px; font-size: 13px; }
+  .confeti { position: absolute; width: 8px; height: 14px; top: -20px; } .slide.on .confeti { animation: cae 2.8s linear infinite; } @keyframes cae { to { top: 280px; transform: rotate(540deg); } }
+  .faq details { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; } .faq summary { font-weight: bold; cursor: pointer; font-size: 14px; }
+  .faq p { font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
+  @media (max-width: 720px) { .slide.on { flex-direction: column; } .slide .demo { flex: none; width: 100%; height: 230px; } .dots { display: none; } .tut-nav button { white-space: nowrap; } }
+  @media (max-width: 600px) { .hdr span { display: none; } .kp { display: block; margin: 4px 0; } }
+</style></head>
+<body>
+  <div class="hdr"><b>iTECH</b><span>Portal de campañas</span><div class="yo"><b id="yo" style="font-size:13px;letter-spacing:0"></b> · <a href="#" onclick="tab(4);return false" style="color:#fff">🎓 Ayuda</a></div></div>
+  <div class="tabs">
+    <button id="t1" class="on" onclick="tab(1)">📨 Campañas</button>
+    <button id="t2" onclick="tab(2)">➕ Nueva campaña</button>
+    <button id="t3" onclick="tab(3)">✍️ Firma de los mails</button>
+    <button id="t4" onclick="tab(4)">🎓 Cómo se usa</button>
+  </div>
+  <div class="wrap">
+    <div id="msg"></div>
+    <div id="p1"><div class="vacio"><span class="spin"></span> Cargando…</div></div>
+
+    <div id="p2" style="display:none">
+      <div class="card">
+        <label>1. Nombre de la campaña <span class="muted">(para identificarla, el cliente no lo ve)</span></label>
+        <input type="text" id="nombre" placeholder="Ej.: Navidad Palmas">
+        <label>2. Asunto del mail <span class="muted">(lo que ve el cliente en la bandeja; vacío = el de la plantilla)</span></label>
+        <div class="row"><input type="text" id="asunto" placeholder="Ej.: 🎄 Regalos tech para esta Navidad"><button type="button" class="emo-btn" style="flex:0" onclick="emojiAbrir(this, 'asunto')">😀</button></div>
+        <label>3. ¿A qué locales va?</label>
+        <div class="locs" id="locs"></div>
+        <label>4. Elegí una plantilla <span class="muted">(después la editás: textos, imágenes, botones)</span></label>
+        <input type="text" id="buscar" placeholder="🔍 Buscar: navidad, padre, black friday…" oninput="pintarTpls()">
+        <div class="tpls" id="tpls" style="margin-top:8px"></div>
+        <div class="actions"><button class="primary" id="crearBtn" onclick="crear()">Crear y editar ➜</button></div>
+      </div>
+    </div>
+
+    <div id="p3" style="display:none">
+      <div class="card">
+        <h4>Firma de los mails</h4>
+        <div class="sub">Es la tarjeta del final de cada mail. Poné el teléfono donde el equipo atiende las consultas.</div>
+        <label>Nombre que firma</label><input type="text" id="fNombre" placeholder="Ej.: Equipo iTech">
+        <label>Teléfono de consultas</label><input type="text" id="fTel" placeholder="Ej.: 11-5555-1234">
+        <label class="chk" style="display:flex;gap:6px;align-items:center;margin-top:10px;color:#222"><input type="checkbox" id="fWa" style="width:auto" checked> Usar este número también para el botón de WhatsApp</label>
+        <div class="muted" id="fActual" style="margin-top:8px"></div>
+        <div class="actions"><button class="primary" onclick="guardarFirma()">Guardar firma</button></div>
+      </div>
+    </div>
+
+    <div id="p4" style="display:none">
+      <div class="tut">
+        <div class="tut-top"><b>🎓 Tutorial</b><div class="prog"><i id="tprog"></i></div><span class="n" id="tn"></span></div>
+
+        <div class="slide">
+          <div class="demo"><div style="text-align:center"><div style="font-size:70px"><span class="saluda">👋</span></div><div style="font-size:34px;margin-top:10px"><span class="salta">📨</span> <span class="salta" style="animation-delay:.2s">✍️</span> <span class="salta" style="animation-delay:.4s">🚀</span> <span class="salta" style="animation-delay:.6s">📊</span></div></div></div>
+          <div class="txt"><div class="ico">🙌</div><h2>¡Te damos la bienvenida al portal de campañas!</h2>
+            <p>Desde acá vas a <b>mandar mails a los clientes de iTech</b>: promos, novedades, saludos por fechas especiales.</p>
+            <p>Son <b>4 pasos</b>: <b>crear</b> la campaña, <b>editarla</b>, <b>mandarte una prueba</b> y <b>programar</b> el día. Después ves cómo le fue.</p>
+            <div class="tip">💡 No te preocupes: <b>nada le llega a los clientes</b> hasta que vos tocás "Programar envío". Podés probar sin miedo.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div><div class="muted" style="margin-bottom:4px">Asunto del mail</div><div class="m-in"><span class="typing">🎄 Regalos tech para esta Navidad</span></div>
+            <div style="margin-top:14px;display:flex;gap:10px;align-items:center"><span class="m-in" style="width:auto;padding:6px 10px" class="pulso"><span class="pulso" style="display:inline-block">😀</span></span><span class="muted">← tocá acá para poner emojis</span></div></div></div>
+          <div class="txt"><div class="ico">✏️</div><h2>Paso 1 · Nombre y asunto</h2>
+            <p>Andá a <b>➕ Nueva campaña</b>.</p>
+            <p><b>Nombre:</b> es solo para vos, para reconocerla (ej. "Navidad Palmas"). El cliente no lo ve.</p>
+            <p><b>Asunto:</b> es lo primero que ve el cliente en su bandeja. Corto, con el beneficio adelante y un emoji con el botón <b>😀</b>.</p>
+            <div class="tip">💡 Si dejás el asunto vacío, se usa el que trae la plantilla.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div><div class="chk-a"><b style="animation-delay:.3s"></b> Unicenter</div><div class="chk-a"><b style="animation-delay:.9s"></b> Palmas del Pilar</div><div class="chk-a"><b style="animation-delay:1.5s"></b> Parque Brown</div><div class="chk-a" style="opacity:.6"><span style="width:20px;height:20px;border:2px solid #aaa;border-radius:4px;display:inline-block"></span> Plaza Oeste</div></div></div>
+          <div class="txt"><div class="ico">📍</div><h2>Paso 2 · ¿A qué locales va?</h2>
+            <p>Tildá los locales cuyos clientes van a recibir el mail. Por ejemplo, una promo que solo vale en Palmas: tildás <b>solo Palmas del Pilar</b>.</p>
+            <p>Si es para todos, tildá <b>Todos</b>.</p>
+            <div class="tip">💡 Cada cliente recibe <b>un solo mail</b>, aunque haya comprado en varios locales.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div style="text-align:center"><div class="m-in" style="width:250px;margin:0 auto 8px;font-size:12px">🔍 <span class="typing" style="max-width:150px">navidad</span></div>
+            <span class="mini-tpl">🗓️ Día del Padre</span><span class="mini-tpl elegida"><b>🗓️ Navidad</b></span><span class="mini-tpl">🗓️ Black Friday</span><br><span class="mini-tpl">Combo Funda + Vidrio</span><span class="mini-tpl">🗓️ Vuelta al cole</span><span class="mini-tpl">🗓️ Día del Niño</span></div></div>
+          <div class="txt"><div class="ico">🧩</div><h2>Paso 3 · Elegí una plantilla</h2>
+            <p>Hay más de 40 plantillas listas: <b>Navidad, Día del Padre, Black Friday, Vuelta al cole</b> y muchas más. Las de 🗓️ son de fechas del año.</p>
+            <p>Escribí en el buscador (ej. "padre") y tocá la que quieras. Después tocá <b>Crear y editar ➜</b>.</p>
+            <div class="tip">💡 La plantilla es un punto de partida: en el paso siguiente cambiás lo que quieras.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div class="mail-mock"><div class="bk t"></div><div class="bk img"></div><div class="bk edit"></div><div class="bk" style="width:80%"></div><div class="bk btn"></div></div><span class="lapiz">✏️</span></div>
+          <div class="txt"><div class="ico">🖌️</div><h2>Paso 4 · Editá el mail</h2>
+            <p>Se abre el <b>editor</b>: a la izquierda los <b>bloques</b> (título, texto, imagen, botón) y a la derecha cómo queda.</p>
+            <p>Tocá un bloque para cambiar el texto. Con <b>↑ ↓</b> lo movés, con <b>✕</b> lo sacás, con <b>+ Agregar bloque</b> sumás uno. Las fotos se suben con el botón <b>Subir</b>.</p>
+            <p>Mirá la vista <b>Celular</b>: la mayoría lo lee ahí. Tocá <b>Guardar</b> y después <b>← Volver al portal</b>.</p>
+            <div class="tip">💡 <b>**así**</b> queda en negrita. El botón <b>😀 Emojis</b> pone un emoji donde estás escribiendo.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div class="phone"><div class="scr"><div class="notif">✉️ <b>[PRUEBA] 🎄 Regalos tech…</b><br>iTech Fix &amp; Accesories</div><div style="padding:60px 10px 0;font-size:11px;color:#999;text-align:center">📱 tu celular</div></div></div></div>
+          <div class="txt"><div class="ico">🧪</div><h2>Paso 5 · Mandate una prueba</h2>
+            <p>En <b>📨 Campañas</b>, tocá <b>🧪 Mandarme una prueba</b>. Te llega el mail <b>a vos</b> (dice [PRUEBA] adelante).</p>
+            <p>Abrilo en el <b>celular</b> y revisá: ¿se lee bien? ¿están bien los precios y las fechas? ¿los botones abren la página correcta?</p>
+            <div class="tip">💡 Si cambiás algo, mandate otra prueba: el sistema no deja programar sin una prueba de la última versión.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div class="cal"><b>Noviembre</b><div class="g"><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span><span>3</span><span>4</span><span class="dia">5</span><span>6</span><span>7</span><span>8</span><span>9</span></div><div style="margin-top:8px">🕙 10:00</div></div><span class="cohete">🚀</span></div>
+          <div class="txt"><div class="ico">🚀</div><h2>Paso 6 · Programá el envío</h2>
+            <p>Si la prueba está bien, tocá <b>🚀 Programar envío</b>, elegí <b>día y hora</b> (o "Enviar ahora") y <b>Confirmar</b>.</p>
+            <p>Listo: el mail sale solo ese día. La campaña pasa a <b>Programada</b>.</p>
+            <div class="tip">💡 Los mejores horarios: <b>martes a jueves, de 10 a 12 o de 18 a 20</b>. Si te equivocaste, avisale enseguida a quien administra el mailing: lo puede pausar.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div class="barras"><div class="l"><span>📬 Llegó</span><b>95%</b></div><div class="b"><i style="--w:95%"></i></div>
+            <div class="l"><span>👀 La abrieron</span><b>39%</b></div><div class="b"><i style="--w:39%;animation-delay:.4s"></i></div>
+            <div class="l"><span>👆 Hicieron clic</span><b>57%</b></div><div class="b"><i style="--w:57%;animation-delay:.8s"></i></div></div></div>
+          <div class="txt"><div class="ico">📊</div><h2>Paso 7 · ¿Cómo le fue?</h2>
+            <p>Cuando la campaña sale, tocá <b>📊 Ver resultados</b>.</p>
+            <p><b>👀 La abrieron:</b> de cada 10 personas que la recibieron, cuántas la abrieron (39% ≈ 4 de cada 10 — ¡muy bien!).</p>
+            <p><b>👆 Hicieron clic:</b> de los que la abrieron, cuántos tocaron un botón.</p>
+            <div class="tip">💡 En comercios, que la abra entre el <b>15% y el 30%</b> es normal. Más de 30% es excelente.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div class="firma-mock"><b>Equipo iTech</b><div class="muted">Fix &amp; Accesories</div><div style="margin-top:8px">📞 <span class="typing">11-5555-1234</span></div><div style="margin-top:4px">📷 @itechfix.ar</div></div></div>
+          <div class="txt"><div class="ico">✍️</div><h2>La firma de los mails</h2>
+            <p>En <b>✍️ Firma de los mails</b> ponés el <b>nombre que firma</b> y el <b>teléfono donde atienden las consultas</b>.</p>
+            <p>Si tildás la casilla, el mismo número se usa para el botón de <b>WhatsApp</b> de los mails.</p>
+            <div class="tip">💡 El cambio se aplica a las campañas nuevas. Las que ya están programadas salen con la firma anterior.</div></div>
+        </div>
+
+        <div class="slide">
+          <div class="demo"><div style="text-align:center;font-size:60px"><span class="salta">🏆</span></div>
+            <i class="confeti" style="left:30px;background:#000;animation-delay:0s"></i><i class="confeti" style="left:90px;background:#E0A100;animation-delay:.6s"></i><i class="confeti" style="left:150px;background:#999;animation-delay:1.2s"></i><i class="confeti" style="left:210px;background:#000;animation-delay:.3s"></i><i class="confeti" style="left:270px;background:#E0A100;animation-delay:.9s"></i><i class="confeti" style="left:320px;background:#999;animation-delay:1.5s"></i></div>
+          <div class="txt"><div class="ico">⭐</div><h2>Reglas de oro</h2>
+            <p>✅ <b>Una idea por mail</b>: una promo, una novedad o un saludo.</p>
+            <p>✅ <b>Siempre</b> mandate la prueba y miralo en el celular.</p>
+            <p>✅ Revisá <b>precios, fechas y ortografía</b> antes de programar.</p>
+            <p>✅ <b>Máximo 1 o 2 campañas por semana</b>: si mandamos de más, los clientes se dan de baja.</p>
+            <div style="margin-top:14px"><button class="primary" onclick="finTutorial()">🚀 ¡Listo, crear mi primera campaña!</button></div></div>
+        </div>
+
+        <div class="tut-nav"><button onclick="tutMover(-1)">← Anterior</button><div class="dots" id="tdots"></div><button class="primary" onclick="tutMover(1)" id="tsig">Siguiente →</button></div>
+      </div>
+
+      <h3 style="margin:22px 0 10px">❓ Preguntas frecuentes</h3>
+      <div class="faq">
+        <details><summary>¿Le puede llegar algo a los clientes mientras pruebo?</summary><p>No. Mientras la campaña está en <b>Borrador</b> no sale nada. Las pruebas te llegan solo a vos. Recién cuando tocás <b>Programar envío</b> y confirmás, se manda.</p></details>
+        <details><summary>Me equivoqué y ya la programé, ¿qué hago?</summary><p>Avisale enseguida a quien administra el mailing: desde la planilla la puede <b>pausar o cancelar</b> antes de que salga (o frenar lo que falta enviar).</p></details>
+        <details><summary>¿Por qué no veo cuántos clientes tiene cada local?</summary><p>Porque la base de clientes es información privada de la empresa. El sistema elige solo a quién mandarle y se encarga de no repetir, no mandar a quienes se dieron de baja ni a mails que no existen.</p></details>
+        <details><summary>¿Cómo subo una foto?</summary><p>En el editor, tocá el bloque <b>Imagen</b> › botón <b>Subir</b> y elegí la foto de tu compu o celular. Si no querés foto, sacá el bloque con la <b>✕</b>.</p></details>
+        <details><summary>¿Qué pongo en el asunto para que lo abran?</summary><p>Corto (menos de 50 letras), con el beneficio adelante y un emoji. Ej.: <b>"🔥 Fundas al 2x1 solo este finde"</b>. Evitá TODO EN MAYÚSCULAS y muchos signos !!!</p></details>
+        <details><summary>¿El cliente puede darse de baja?</summary><p>Sí: al pie de cada mail hay un enlace "Darme de baja", y si responde "BAJA" también se lo da de baja solo. Es normal y nos ayuda a que los mails no caigan en spam.</p></details>
+        <details><summary>¿Cuándo veo los resultados?</summary><p>Se actualizan cada hora. Lo ideal es mirarlos a partir del día siguiente del envío; a los 3 días ya están casi completos.</p></details>
+      </div>
+    </div>
+  </div>
+  <div class="modal" id="modal"><div class="box" id="mbox"></div></div>
+<script>
+  const DATA = { token: CLAVE, nombre: '', base: '', web: true }; if (!CLAVE) { document.addEventListener('DOMContentLoaded', function () { document.body.innerHTML = '<div style="font-family:Arial;max-width:480px;margin:60px auto;padding:20px;text-align:center"><h2>Falta tu link personal</h2><p>Abrí el portal desde el link que te llegó por mail (o pedíselo a quien administra el mailing).</p></div>'; }); }
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let INI = null, tplSel = '';
+  function api(accion, args) {
+    return new Promise((ok, ko) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => ko(e)).portalCall(DATA.token, accion, args || []));
+  }
+  function aviso(t, tipo) { $('msg').innerHTML = t ? '<div class="msg ' + (tipo || 'ok') + '"></div>' : ''; if (t) { $('msg').firstChild.textContent = t; window.scrollTo(0, 0); } }
+  function tab(n) { [1, 2, 3, 4].forEach(i => { $('p' + i).style.display = i === n ? '' : 'none'; $('t' + i).classList.toggle('on', i === n); }); aviso(''); if (n === 4) tutIr(TUT); window.scrollTo(0, 0); }
+  /* ---- Tutorial ---- */
+  let TUT = 0;
+  const SLIDES = () => Array.from(document.querySelectorAll('#p4 .slide'));
+  function tutIr(i) {
+    const S = SLIDES(); TUT = Math.max(0, Math.min(S.length - 1, i));
+    S.forEach((el, j) => { el.classList.remove('on'); if (j === TUT) { void el.offsetWidth; el.classList.add('on'); } });
+    $('tdots').innerHTML = S.map((_, j) => '<span class="' + (j === TUT ? 'on' : '') + '" onclick="tutIr(' + j + ')"></span>').join('');
+    $('tprog').style.width = Math.round(100 * (TUT + 1) / S.length) + '%';
+    $('tn').textContent = 'Paso ' + (TUT + 1) + ' de ' + S.length;
+    $('tsig').style.visibility = TUT === S.length - 1 ? 'hidden' : 'visible';
+  }
+  function tutMover(d) { tutIr(TUT + d); }
+  function finTutorial() { try { localStorage.setItem('itech_tutorial_visto', '1'); } catch (e) { } tab(2); }
+  document.addEventListener('keydown', e => { if ($('p4').style.display === 'none') return; if (e.key === 'ArrowRight') tutMover(1); if (e.key === 'ArrowLeft') tutMover(-1); });
+  (function () { let visto = false; try { visto = localStorage.getItem('itech_tutorial_visto') === '1'; } catch (e) { } if (!visto) setTimeout(() => tab(4), 50); })();
+  function cerrar() { $('modal').style.display = 'none'; }
+  function modal(html) { $('mbox').innerHTML = html; $('modal').style.display = 'flex'; }
+  $('modal').onclick = e => { if (e.target === $('modal')) cerrar(); };
+  function irEditor(id) { window.top.location.href = (DATA.web ? 'editor.html?k=' : DATA.base + '?p=editor&k=') + encodeURIComponent(DATA.token) + '&id=' + encodeURIComponent(id); }
+
+  api('init').then(d => {
+    INI = d;
+    $('yo').textContent = 'Hola, ' + d.nombre;
+    $('locs').innerHTML = '<label><input type="checkbox" class="loc" value="(Todos)"> <b>Todos</b></label>' + d.locales.map(l => '<label><input type="checkbox" class="loc" value="' + esc(l) + '"> ' + esc(l) + '</label>').join('');
+    $('locs').onchange = e => { if (e.target.value === '(Todos)' && e.target.checked) document.querySelectorAll('.loc').forEach(x => { if (x !== e.target) x.checked = false; }); else if (e.target.checked) document.querySelector('.loc[value="(Todos)"]').checked = false; };
+    pintarTpls(); pintarCampanias(d.campanias);
+    $('fNombre').value = d.firma.nombre; $('fTel').value = d.firma.telefono;
+    $('fActual').textContent = 'Ahora: ' + d.firma.nombre + ' · ' + d.firma.telefono + (d.firma.whatsapp ? ' · WhatsApp ' + d.firma.whatsapp : '');
+  }).catch(e => { $('p1').innerHTML = '<div class="msg err"></div>'; $('p1').firstChild.textContent = e.message; });
+
+  function pintarTpls() {
+    const q = ($('buscar').value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+    const L = (INI ? INI.plantillas : []).filter(t => !q || (t.nombre + ' ' + t.descripcion).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').indexOf(q) >= 0);
+    $('tpls').innerHTML = L.length ? L.map(t => '<div class="tpl' + (t.id === tplSel ? ' on' : '') + '" data-id="' + esc(t.id) + '"><b>' + esc(t.nombre) + '</b><small>' + esc(t.descripcion).slice(0, 120) + '</small></div>').join('') : '<div class="muted">No hay plantillas con ese texto.</div>';
+    document.querySelectorAll('.tpl').forEach(el => el.onclick = () => { tplSel = el.dataset.id; pintarTpls(); });
+  }
+
+  function pintarCampanias(L) {
+    if (!L.length) { $('p1').innerHTML = '<div class="vacio">Todavía no hay campañas. Creá la primera en <b>➕ Nueva campaña</b>.</div>'; return; }
+    $('p1').innerHTML = L.map(c => {
+      let botones = '';
+      if (c.estadoReal === 'Borrador') {
+        botones = '<button onclick="irEditor(\'' + c.id + '\')">✏️ Editar</button><button onclick="prueba(\'' + c.id + '\')">🧪 Mandarme una prueba</button>' +
+          '<button class="primary" onclick="programar(\'' + c.id + '\', ' + c.pruebaOk + ')">🚀 ' + (INI.aprobacion ? 'Pedir envío' : 'Programar envío') + '</button>' +
+          '<button class="danger" onclick="borrar(\'' + c.id + '\')">🗑️</button>';
+      } else if (c.enviada) botones = '<button class="primary" onclick="resultados(\'' + c.id + '\')">📊 Ver resultados</button>';
+      const kp = c.enviada ? '<div style="margin-top:8px"><span class="kp"><b>' + (c.apertura == null ? '—' : c.apertura + '%') + '</b>la abrieron</span><span class="kp"><b>' + (c.clic == null ? '—' : c.clic + '%') + '</b>hizo clic</span></div>' : '';
+      return '<div class="card"><h4>' + esc(c.nombre) + ' <span class="badge b-' + esc(c.estado.split(' ')[0]) + '">' + esc(c.estado) + '</span></h4>' +
+        '<div class="sub">' + esc(c.asunto) + '</div><div class="sub">📍 ' + esc(c.locales || 'Sin locales') + (c.programada ? ' · 🗓️ ' + esc(c.programada) : '') + (c.creadaPor ? ' · 👤 ' + esc(c.creadaPor) : '') +
+        (c.estadoReal === 'Borrador' ? ' · ' + (c.pruebaOk ? '✅ prueba al día' : '🧪 falta prueba') : '') + '</div>' + kp + '<div class="row2">' + botones + '</div></div>';
+    }).join('');
+  }
+  function recargar() { return api('campanias').then(pintarCampanias); }
+
+  function crear() {
+    const locs = Array.from(document.querySelectorAll('.loc:checked')).map(x => x.value);
+    if (!tplSel) return aviso('Elegí una plantilla.', 'err');
+    $('crearBtn').disabled = true; aviso('Creando la campaña…');
+    api('crear', [$('nombre').value, $('asunto').value, tplSel, locs]).then(id => irEditor(id)).catch(e => { $('crearBtn').disabled = false; aviso(e.message, 'err'); });
+  }
+  function prueba(id) { aviso('Mandando la prueba…'); api('prueba', [id]).then(t => { aviso(t); recargar(); }).catch(e => aviso(e.message, 'err')); }
+  function borrar(id) { if (!confirm('¿Borrar este borrador?')) return; api('borrar', [id]).then(t => { aviso(t); recargar(); }).catch(e => aviso(e.message, 'err')); }
+  function programar(id, pruebaOk) {
+    if (!pruebaOk) return aviso('Antes de programar, mandate una prueba (🧪) y revisala en el celular.', 'warn');
+    const d = new Date(Date.now() + 3600e3); d.setMinutes(0, 0, 0);
+    const p2 = n => String(n).padStart(2, '0');
+    const v = d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) + 'T' + p2(d.getHours()) + ':00';
+    modal('<h3>' + (INI.aprobacion ? 'Pedir el envío' : 'Programar el envío') + '</h3>' +
+      '<label class="chk" style="display:flex;gap:6px;align-items:center;color:#222"><input type="radio" name="m" value="schedule" checked style="width:auto"> Elegir día y hora</label>' +
+      '<input type="datetime-local" id="cuando" value="' + v + '" style="margin:6px 0 10px">' +
+      '<label class="chk" style="display:flex;gap:6px;align-items:center;color:#222"><input type="radio" name="m" value="now" style="width:auto"> Enviar ahora</label>' +
+      '<p class="muted">Consejo: martes a jueves, entre las 10 y las 12 o entre las 18 y las 20.</p>' +
+      '<div id="mout"></div><div class="actions"><button onclick="cerrar()">Cancelar</button><button class="primary" id="okP">Confirmar</button></div>');
+    $('okP').onclick = () => {
+      const modo = document.querySelector('input[name=m]:checked').value;
+      $('okP').disabled = true; $('mout').innerHTML = '<div class="msg ok"><span class="spin"></span> Programando…</div>';
+      api('programar', [id, modo, $('cuando').value]).then(t => { cerrar(); aviso(t); recargar(); })
+        .catch(e => { $('okP').disabled = false; $('mout').innerHTML = '<div class="msg err"></div>'; $('mout').firstChild.textContent = e.message; });
+    };
+  }
+  function resultados(id) {
+    modal('<div class="vacio"><span class="spin"></span> Calculando…</div>');
+    api('resultados', [id]).then(r => {
+      const fila = (t, v, sub) => '<div style="margin:12px 0"><div style="display:flex;justify-content:space-between"><span>' + t + '</span><b>' + v + '%</b></div><div class="bar"><i style="width:' + v + '%"></i></div>' + (sub ? '<div class="muted">' + sub + '</div>' : '') + '</div>';
+      modal('<h3 style="margin-bottom:2px">' + esc(r.nombre) + '</h3><div class="muted">' + esc(r.asunto) + (r.enviada ? ' · enviada el ' + esc(r.enviada) : '') + '</div>' +
+        '<div style="text-align:center;margin:16px 0"><div class="big">' + r.abrieron + '%</div><div class="muted">la abrió (de cada 10 personas, ' + Math.round(r.abrieron / 10) + ' la abrieron)</div></div>' +
+        fila('📬 Llegó a la bandeja', r.llegaron) + fila('👀 La abrieron', r.abrieron) + fila('👆 Hicieron clic (de los que abrieron)', r.clic) +
+        (r.enlaceTop ? '<p class="muted">Lo más tocado: ' + esc(r.enlaceTop) + '</p>' : '') +
+        (r.consejos.length ? '<h4>💡 Para la próxima</h4><ul style="padding-left:18px;font-size:13px">' + r.consejos.map(c => '<li>' + esc(c) + '</li>').join('') + '</ul>' : '') +
+        '<div class="actions"><button onclick="cerrar()">Cerrar</button></div>');
+    }).catch(e => modal('<div class="msg err">' + esc(e.message) + '</div><div class="actions"><button onclick="cerrar()">Cerrar</button></div>'));
+  }
+  function guardarFirma() {
+    aviso('Guardando…');
+    api('firma', [$('fNombre').value, $('fTel').value, $('fWa').checked]).then(t => { aviso(t); $('fActual').textContent = 'Ahora: ' + $('fNombre').value + ' · ' + $('fTel').value; }).catch(e => aviso(e.message, 'err'));
+  }
+</script>
+</body></html>

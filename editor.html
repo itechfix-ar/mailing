@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>iTech · Editor del mail</title><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<script>
+  /* Puente con la planilla: llama a la aplicación web de Google (doPost) sin usar la sesión del navegador. */
+  window.WEB_APP = 'https://script.google.com/macros/s/AKfycbx6xtiGaSsybUtON2YD8BuGvP--nQrvzArVivpB-0aDZK5Dmeh_TRHl80_XkL8OqWdO/exec';
+  function portalFetch(k, a, args) {
+    return fetch(WEB_APP, { method: 'POST', credentials: 'omit', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ k: k, a: a, args: args || [] }) })
+      .then(function (r) { if (!r.ok) throw new Error('No se pudo conectar (' + r.status + '). Probá de nuevo en un rato.'); return r.json(); })
+      .then(function (j) { if (!j.ok) throw new Error(j.error || 'Error'); return j.r; })
+      .catch(function (e) { if (e instanceof TypeError) throw new Error('No hay conexión con el sistema. Revisá internet y probá de nuevo.'); throw e; });
+  }
+  (function () {
+    function mk(ok, ko) {
+      return new Proxy({}, { get: function (t, p) {
+        if (p === 'withSuccessHandler') return function (f) { return mk(f, ko); };
+        if (p === 'withFailureHandler') return function (f) { return mk(ok, f); };
+        if (p === 'portalCall') return function (k, a, args) { portalFetch(k, a, args).then(function (r) { ok && ok(r); }, function (e) { ko && ko(e); }); };
+        return function () { ko && ko(new Error('Acción no disponible en la web.')); };
+      } });
+    }
+    window.google = { script: { host: { close: function () {} }, get run() { return mk(null, null); } } };
+  })();
+  var _q = new URLSearchParams(location.search);
+  var CLAVE = _q.get('k') || '';
+  try { if (CLAVE) localStorage.setItem('itech_portal_k', CLAVE); else CLAVE = localStorage.getItem('itech_portal_k') || ''; } catch (e) {}
+</script>
+<style>
+  :root { --pet:#000000; --petd:#111111; --rosa:#003366; --rosac:#DDDDDD; --dor:#003366; --bg:#F4F4F4; --tx:#222222; --mut:#6B6B6B; --err:#C0392B; --warn:#B9770E; --ok:#2E7D5B; --line:#DDDDDD; }
+  * { box-sizing: border-box; }
+  body { font: 13px/1.45 Arial, sans-serif; color: var(--tx); margin: 0; padding: 14px; }
+  h3 { margin: 4px 0 10px; color: var(--petd); font: bold 15px Arial, sans-serif; }
+  label { display: block; font-size: 12px; color: var(--mut); margin: 8px 0 3px; }
+  input[type=text], input[type=email], input[type=datetime-local], input[type=date], textarea, select {
+    width: 100%; padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px; font: 13px Arial, sans-serif; background: #fff; }
+  textarea { resize: vertical; min-height: 64px; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid #9AA9BA; border-color: var(--pet); }
+  button { font: bold 13px Arial, sans-serif; border-radius: 6px; padding: 8px 14px; border: 1px solid var(--pet); background: #fff; color: var(--petd); cursor: pointer; }
+  button.primary { background: var(--pet); color: #fff; }
+  button.danger { border-color: var(--err); color: var(--err); }
+  button:disabled { opacity: .45; cursor: default; }
+  button.sm { padding: 3px 8px; font-size: 12px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .row > * { flex: 1; }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+  .msg { padding: 8px 10px; border-radius: 6px; margin: 8px 0; white-space: pre-wrap; }
+  .msg.err { background: #FBEAEA; color: var(--err); }
+  .msg.warn { background: #FDF3E1; color: var(--warn); }
+  .msg.ok { background: #E7F4EE; color: var(--ok); }
+  .muted { color: var(--mut); font-size: 12px; }
+  table.grid { border-collapse: collapse; width: 100%; }
+  table.grid th, table.grid td { border-bottom: 1px solid var(--line); padding: 5px 6px; text-align: left; vertical-align: top; font-size: 12px; }
+  table.grid th { background: var(--bg); color: var(--petd); }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 10px; background: var(--bg); color: var(--petd); font-size: 11px; }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .kpi { background: var(--bg); border-radius: 8px; padding: 8px 10px; }
+  .kpi b { display: block; font-size: 18px; color: var(--petd); }
+  .kpi span { font-size: 11px; color: var(--mut); }
+  .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--line); border-top-color: var(--pet); border-radius: 50%; animation: s 0.8s linear infinite; vertical-align: middle; }
+  @keyframes s { to { transform: rotate(360deg); } }
+</style>
+<style>
+  .emo-btn { padding: 4px 8px; font-size: 15px; line-height: 1; border-color: var(--line); }
+  .emo-pan { position: fixed; z-index: 9999; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.18);
+    padding: 8px; width: 300px; display: none; }
+  .emo-pan .g { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
+  .emo-pan button { border: 0; background: none; font-size: 20px; padding: 4px 0; cursor: pointer; border-radius: 4px; }
+  .emo-pan button:hover { background: var(--bg); }
+  .emo-pan .t { font-size: 11px; color: var(--mut); margin: 6px 0 2px; }
+  .locs label { display: inline-flex; align-items: center; gap: 4px; margin: 3px 10px 3px 0; font-size: 13px; color: var(--tx); }
+  .locs label.off { color: #aaa; text-decoration: line-through; }
+  .locs input { width: auto; }
+</style>
+<script>
+/* Emojis: botón 😀 junto a un campo, o en el editor, inserta en el último campo de texto donde estabas escribiendo. */
+(function () {
+  const GRUPOS = [
+    ['Promos', '🔥 💥 💸 🏷️ 🛍️ 🎁 🎉 🥳 ⭐ ✨ ⚡ 💯 🆕 ⏰ ‼️ 📣'],
+    ['Celulares', '📱 🔋 🔌 🎧 🛡️ 📦 🚚 🔧 💡 📸 ⌚ 💻'],
+    ['Fechas', '💐 🌷 🌸 🎀 ❤️ 💕 🤍 👩 👨 👶 🎄 🎅 ☀️ 🏖️ 🎓 🏆'],
+    ['Caras y manos', '👋 🙌 👏 💪 👉 👇 ✅ 😍 🤩 😉 😊 🙂 👀 🤔 🙏 ➡️ 📍']
+  ];
+  let ultimo = null, fijo = null, pan = null;
+  document.addEventListener('focusin', e => {
+    const t = e.target;
+    if (t && !t.disabled && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text'))) ultimo = t;
+  });
+  function insertar(em) {
+    const el = fijo || ultimo;
+    if (!el) { alert('Hacé clic primero en el campo donde querés el emoji.'); return; }
+    const a = el.selectionStart == null ? el.value.length : el.selectionStart, b = el.selectionEnd == null ? a : el.selectionEnd;
+    el.value = el.value.slice(0, a) + em + el.value.slice(b);
+    el.focus(); el.selectionStart = el.selectionEnd = a + em.length;
+    el.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  function armar() {
+    pan = document.createElement('div'); pan.className = 'emo-pan';
+    pan.innerHTML = GRUPOS.map(g => '<div class="t">' + g[0] + '</div><div class="g">' +
+      g[1].split(' ').map(e => '<button type="button" data-e="' + e + '">' + e + '</button>').join('') + '</div>').join('');
+    pan.addEventListener('mousedown', e => e.preventDefault());
+    pan.addEventListener('click', e => { const b = e.target.closest('button[data-e]'); if (b) insertar(b.dataset.e); });
+    document.body.appendChild(pan);
+    document.addEventListener('mousedown', e => { if (pan.style.display === 'block' && !pan.contains(e.target) && !e.target.closest('.emo-btn')) pan.style.display = 'none'; });
+  }
+  /** Abre el panel. target = id o elemento fijo (opcional); sin target usa el último campo enfocado. */
+  window.emojiAbrir = function (btn, target) {
+    if (!pan) armar();
+    fijo = typeof target === 'string' ? document.getElementById(target) : (target || null);
+    if (pan.style.display === 'block') { pan.style.display = 'none'; return; }
+    const r = btn.getBoundingClientRect();
+    pan.style.display = 'block';
+    pan.style.left = Math.max(6, Math.min(r.left, window.innerWidth - 310)) + 'px';
+    pan.style.top = (r.bottom + 4 + 300 > window.innerHeight ? Math.max(6, r.top - 290) : r.bottom + 4) + 'px';
+  };
+  document.addEventListener('mousedown', e => { if (e.target.closest && e.target.closest('.emo-btn')) e.preventDefault(); });
+})();
+</script>
+<style>.top{flex-wrap:wrap}.wrap{height:auto;min-height:calc(100vh - 90px)}@media(max-width:900px){.wrap{flex-direction:column}.left{width:100%;min-width:0;border-right:0}}</style>
+<style>
+  body { padding: 0; height: 100vh; overflow: hidden; }
+  .top { display: flex; gap: 10px; align-items: flex-end; padding: 10px 14px; border-bottom: 1px solid var(--line); background: #FAFAFA; }
+  .top .f { flex: 1; } .top label { margin-top: 0; }
+  .wrap { display: flex; height: calc(100vh - 66px); }
+  .left { width: 470px; min-width: 470px; overflow: auto; padding: 10px 12px 60px; border-right: 1px solid var(--line); }
+  .right { flex: 1; display: flex; flex-direction: column; background: #E6E6E6; }
+  .pbar { display: flex; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--line); background: #fff; }
+  .pbar select { width: auto; min-width: 220px; }
+  .seg button { border-radius: 0; } .seg button:first-child { border-radius: 6px 0 0 6px; } .seg button:last-child { border-radius: 0 6px 6px 0; margin-left: -1px; }
+  .seg button.on { background: var(--pet); color: #fff; }
+  .stage { flex: 1; overflow: auto; display: flex; justify-content: center; padding: 16px; }
+  iframe { border: 0; background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,.12); border-radius: 6px; height: 100%; min-height: 600px; transition: width .2s; }
+  .blk { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 8px; background: #fff; }
+  .blk.open { border-color: var(--pet); box-shadow: 0 0 0 1px var(--pet); }
+  .bh { display: flex; align-items: center; gap: 6px; padding: 7px 8px; cursor: pointer; }
+  .bh .t { flex: 1; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .bh .t b { color: var(--petd); margin-right: 6px; }
+  .bh .t span { color: var(--mut); }
+  .bb { padding: 4px 12px 12px; display: none; border-top: 1px dashed var(--line); }
+  .blk.open .bb { display: block; }
+  .item { border: 1px dashed var(--line); border-radius: 6px; padding: 6px 8px; margin-top: 8px; }
+  .imgrow { display: flex; gap: 6px; } .imgrow input { flex: 1; }
+  .help { font-size: 11px; color: var(--mut); background: var(--bg); border-radius: 6px; padding: 6px 8px; margin-top: 10px; }
+  .help code { background: #fff; padding: 0 3px; border-radius: 3px; cursor: pointer; }
+  .addbar { display: flex; gap: 6px; margin: 10px 0; } .addbar select { flex: 1; }
+  #status { min-width: 160px; text-align: right; color: var(--mut); font-size: 12px; }
+  .ro { background: #FDF3E1; color: var(--warn); padding: 6px 10px; border-radius: 6px; margin-bottom: 8px; }
+</style></head>
+<body>
+  <div class="top">
+    <div class="f" style="flex:2"><label>Asunto</label><div class="row"><input type="text" id="subject"><button type="button" class="emo-btn" style="flex:0" title="Emojis en el asunto" onclick="emojiAbrir(this, 'subject')">😀</button></div></div>
+    <div class="f" style="flex:1.4"><label>Texto de vista previa (bandeja de entrada)</label><div class="row"><input type="text" id="preheader"><button type="button" class="emo-btn" style="flex:0" title="Emojis" onclick="emojiAbrir(this, 'preheader')">😀</button></div></div>
+    <button type="button" class="emo-btn" title="Insertar un emoji en el campo donde estás escribiendo (títulos, textos, botones…)" onclick="emojiAbrir(this)">😀 Emojis</button>
+    <div id="status"></div>
+    <button id="tplBtn" onclick="toggleTpl()">Guardar como plantilla</button>
+    <button class="primary" id="saveBtn" onclick="save()">Guardar</button>
+    <button id="closeBtn" onclick="closeEd()">Cerrar</button>
+  </div>
+  <div class="wrap">
+    <div class="left">
+      <div id="ro"></div>
+      <div id="locbox" class="item" style="display:none;border-style:solid;background:#FAFAFA">
+        <b>📍 Locales de esta campaña</b> <span class="muted">(a qué clientes va; también se puede cambiar al confirmar)</span>
+        <div class="locs" id="locales"></div>
+        <div class="row"><div><label>Cargados desde</label><input type="date" id="desde"></div><div><label>Hasta</label><input type="date" id="hasta"></div></div>
+      </div>
+      <div id="tplbox" style="display:none" class="item"><label>Nombre de la nueva plantilla</label><div class="row"><input type="text" id="tplName"><button class="primary sm" style="flex:0" onclick="saveTpl()">Crear</button></div></div>
+      <div id="blocks"></div>
+      <div class="addbar"><select id="addType"></select><button onclick="addBlock()">+ Agregar bloque</button></div>
+      <div class="help">
+        <b>Variables</b> (clic para copiar): <code>{{primer_nombre}}</code> <code>{{nombre|cliente}}</code> <code>{{local|nuestros locales}}</code> <code>{{email}}</code><br>
+        <b>Enlaces de botones</b>: <code>{{whatsapp}}</code> = el WhatsApp de la firma (se cambia en ✍️ Firma) · <code>{{web}}</code> = la web de iTech.<br>
+        Con <code>|texto</code> definís la alternativa si falta el dato. Sin alternativa, la confirmación se bloquea si algún destinatario no lo tiene.<br>
+        <b>Formato</b>: <code>**negrita**</code> <code>*cursiva*</code> <code>[texto](https://…)</code> · línea con <code>- </code> = viñeta.<br>
+        <b>Imágenes</b>: botón Subir (se optimizan a 1200 px), enlace/ID de Drive o URL https pública. PNG/JPG/GIF hasta 2,5 MB.
+      </div>
+    </div>
+    <div class="right">
+      <div class="pbar">
+        <div class="seg"><button id="vD" class="on" onclick="view(680)">Computadora</button><button id="vM" onclick="view(390)">Celular</button></div>
+        <span class="muted">Vista para:</span><select id="who"></select>
+        <span id="pst" class="muted"></span>
+      </div>
+      <div class="stage"><iframe id="pv" style="width:680px"></iframe></div>
+    </div>
+  </div>
+  <input type="file" id="fileIn" accept="image/png,image/jpeg,image/gif" style="display:none">
+<script>
+  const DATA = { key: (_q.get('id') || ''), token: CLAVE, volver: 'index.html?k=' + encodeURIComponent(CLAVE) }; if (!CLAVE) { document.addEventListener('DOMContentLoaded', function () { document.body.innerHTML = '<div style="font-family:Arial;max-width:480px;margin:60px auto;padding:20px;text-align:center"><h2>Falta tu link personal</h2><p>Abrí el portal desde el link que te llegó por mail (o pedíselo a quien administra el mailing).</p></div>'; }); }
+  /* En la planilla llama directo al servidor; en el portal del equipo pasa por portalCall con la clave de la persona. */
+  function SRV() {
+    if (!DATA.token) return google.script.run;
+    let ok = () => {}, fail = () => {};
+    const base = { withSuccessHandler(f) { ok = f; return prox; }, withFailureHandler(f) { fail = f; return prox; } };
+    const prox = new Proxy(base, { get(t, k) { if (k in t) return t[k]; return (...a) => google.script.run.withSuccessHandler(ok).withFailureHandler(fail).portalCall(DATA.token, k, a); } });
+    return prox;
+  }
+  const $ = id => document.getElementById(id);
+  const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const COLORS = [['primario', 'Principal (negro)'], ['acento', 'Acento (azul)'], ['gris', 'Gris'], ['texto', 'Texto'], ['linea', 'Línea (gris claro)']];
+  const ALIGN = [['left', 'Izquierda'], ['center', 'Centro'], ['right', 'Derecha']];
+  const SCHEMA = {
+    header: { l: 'Encabezado (logo)', f: [{ k: 'tagline', l: 'Frase bajo el logo', t: 'text' }, { k: 'logo', l: 'Logo alternativo (vacío = logo de Configuración)', t: 'image' }], d: () => ({ tagline: DATA_L.frase || '' }) },
+    greeting: { l: 'Saludo', f: [{ k: 'withName', l: 'Si el contacto tiene nombre', t: 'text' }, { k: 'withoutName', l: 'Si no tiene nombre', t: 'text' }, { k: 'align', l: 'Alineación', t: 'sel', o: ALIGN }], d: () => ({ withName: '¡Hola {{primer_nombre}}! 👋', withoutName: '¡Hola! 👋', align: 'center' }) },
+    title: { l: 'Título', f: [{ k: 'text', l: 'Texto', t: 'text' }, { k: 'color', l: 'Color', t: 'sel', o: COLORS }, { k: 'size', l: 'Tamaño', t: 'sel', o: [['S', 'Chico'], ['M', 'Mediano'], ['L', 'Grande']] }, { k: 'align', l: 'Alineación', t: 'sel', o: ALIGN }], d: () => ({ text: 'Nuevo título', color: 'primario', size: 'M', align: 'center' }) },
+    text: { l: 'Texto', f: [{ k: 'text', l: 'Texto', t: 'area' }, { k: 'style', l: 'Estilo', t: 'sel', o: [['normal', 'Normal'], ['destacado', 'Destacado (negrita grande)']] }, { k: 'accent', l: 'Color de **negritas**', t: 'sel', o: COLORS }, { k: 'align', l: 'Alineación', t: 'sel', o: ALIGN }], d: () => ({ text: '', style: 'normal', accent: 'acento', align: 'left' }) },
+    image: { l: 'Imagen', f: [{ k: 'src', l: 'Imagen', t: 'image' }, { k: 'alt', l: 'Texto alternativo', t: 'text' }, { k: 'link', l: 'Enlace al hacer clic (opcional)', t: 'text' }, { k: 'width', l: 'Ancho', t: 'sel', o: [['100', '100%'], ['80', '80%'], ['60', '60%'], ['40', '40%']] }], d: () => ({ src: '', alt: '', link: '', width: 100 }) },
+    button: { l: 'Botón', f: [{ k: 'text', l: 'Texto', t: 'text' }, { k: 'url', l: 'Enlace', t: 'text' }, { k: 'style', l: 'Estilo', t: 'sel', o: [['filled', 'Relleno'], ['outline', 'Contorno'], ['link', 'Enlace simple']] }, { k: 'color', l: 'Color', t: 'sel', o: COLORS }, { k: 'align', l: 'Alineación', t: 'sel', o: ALIGN }], d: () => ({ text: 'Ver más', url: DATA_L.web || 'https://itechgroup.com.ar', style: 'filled', color: 'primario', align: 'center' }) },
+    products: { l: 'Productos (1 a 3 columnas)', f: [{ k: 'items', t: 'items' }], d: () => ({ items: [newItem(), newItem(), newItem()] }) },
+    divider: { l: 'Separador', f: [{ k: 'color', l: 'Color', t: 'sel', o: COLORS }], d: () => ({ color: 'linea' }) },
+    spacer: { l: 'Espacio', f: [{ k: 'height', l: 'Alto', t: 'sel', o: [['12', 'Chico'], ['24', 'Mediano'], ['48', 'Grande']] }], d: () => ({ height: 24 }) },
+    signature: { l: 'Firma', f: [{ k: 'text', l: 'Texto de cierre', t: 'area' }, { k: 'showCard', l: 'Mostrar tarjeta con logo y datos (de Configuración)', t: 'check' }], d: () => ({ text: 'Saludos,\n**Equipo iTech**', showCard: true }) }
+  };
+  const ITEM_F = [{ k: 'img', l: 'Imagen', t: 'image' }, { k: 'title', l: 'Título', t: 'text' }, { k: 'text', l: 'Texto', t: 'area' }, { k: 'btnText', l: 'Texto del botón', t: 'text' }, { k: 'url', l: 'Enlace', t: 'text' }];
+  function newItem() { return { img: '', title: 'Producto', text: '', btnText: 'Ver', url: (DATA_L && DATA_L.web) || 'https://itechgroup.com.ar' }; }
+
+  let DATA_L = {}, C = null, openId = null, dirty = false, readOnly = false, seq = 0;
+  const imgCache = {};
+  let pvTimer = null, uploadTarget = null, pvWidth = 680;
+
+  Object.keys(SCHEMA).forEach(k => { const o = document.createElement('option'); o.value = k; o.textContent = SCHEMA[k].l; $('addType').appendChild(o); });
+  document.querySelectorAll('.help code').forEach(c => c.onclick = () => { navigator.clipboard && navigator.clipboard.writeText(c.textContent); status('Copiado ' + c.textContent); });
+
+  if (DATA.token) { document.getElementById('closeBtn').textContent = '← Volver al portal'; }
+  SRV().withSuccessHandler(init).withFailureHandler(e => status('Error: ' + e.message)).editorLoad(DATA.key);
+
+  function init(d) {
+    DATA_L = d; C = d.content; readOnly = d.readOnly;
+    C.blocks.forEach(b => b._id = 'b' + (++seq));
+    $('subject').value = C.subject || ''; $('preheader').value = C.preheader || '';
+    if (d.isTpl) { $('subject').placeholder = 'Asunto sugerido para campañas creadas desde esta plantilla'; }
+    $('subject').oninput = () => { C.subject = $('subject').value; touch(); };
+    $('preheader').oninput = () => { C.preheader = $('preheader').value; touch(); };
+    const who = $('who');
+    armarLocales(d);
+    armarWho();
+    who.onchange = preview;
+    if (readOnly) {
+      $('ro').innerHTML = '<div class="ro">Campaña en estado «' + esc(d.estado) + '»: el contenido confirmado no se modifica. Usá Campañas &gt; Duplicar campaña para cambiarlo.</div>';
+      $('saveBtn').disabled = true; $('subject').disabled = true; $('preheader').disabled = true;
+    }
+    renderList(); preview(); status(d.isTpl ? 'Plantilla ' + d.key : 'Campaña ' + d.key + ' · ' + d.estado);
+  }
+
+  function status(t) { $('status').textContent = t; }
+
+  /* ---- Locales de la campaña ---- */
+  let selDirty = false;
+  function selActual() {
+    return { locales: Array.from(document.querySelectorAll('#locales .loc:checked')).map(x => x.value), desde: $('desde').value, hasta: $('hasta').value };
+  }
+  function armarLocales(d) {
+    if (d.isTpl || !d.sel) return;
+    $('locbox').style.display = '';
+    const s = d.sel, todos = s.locales.indexOf('(Todos)') >= 0;
+    $('locales').innerHTML = '<label><input type="checkbox" class="loc" value="(Todos)"' + (todos ? ' checked' : '') + '> <b>Todos</b></label>' +
+      (d.locales || []).map(l => '<label class="' + (l.habilitado ? '' : 'off') + '"><input type="checkbox" class="loc" value="' + esc(l.nombre) + '"' +
+        (l.habilitado ? '' : ' disabled') + (!todos && s.locales.indexOf(l.nombre) >= 0 ? ' checked' : '') + '> ' + esc(l.nombre) + (DATA.token ? '' : ' <span class="pill">' + l.activos + '</span>') + '</label>').join('');
+    $('desde').value = s.desde || ''; $('hasta').value = s.hasta || '';
+    const cambio = e => {
+      const t = e && e.target;
+      if (t && t.value === '(Todos)' && t.checked) document.querySelectorAll('#locales .loc').forEach(x => { if (x !== t) x.checked = false; });
+      else if (t && t.classList && t.classList.contains('loc') && t.checked) { const tt = document.querySelector('#locales .loc[value="(Todos)"]'); if (tt) tt.checked = false; }
+      selDirty = true; armarWho(); touch();
+    };
+    $('locales').onchange = cambio; $('desde').onchange = cambio; $('hasta').onchange = cambio;
+    if (readOnly) document.querySelectorAll('#locbox input').forEach(x => x.disabled = true);
+  }
+  /** Opciones de "Vista para": un ejemplo por cada local elegido + clientes reales de esos locales. */
+  function armarWho() {
+    const who = $('who'), antes = who.value;
+    const todosLocs = (DATA_L.locales || []).filter(l => l.habilitado).map(l => l.nombre);
+    let elegidos = DATA_L.isTpl ? [] : selActual().locales;
+    if (!elegidos.length || elegidos.indexOf('(Todos)') >= 0) elegidos = todosLocs;
+    const ops = [];
+    elegidos.forEach(l => ops.push(['__ejemplo|' + l, 'Ejemplo con nombre (Martina · ' + l + ')']));
+    ops.push(['__sin_nombre|' + (elegidos[0] || ''), 'Ejemplo sin nombre' + (elegidos[0] ? ' · ' + elegidos[0] : '')]);
+    (DATA_L.contacts || []).filter(c => !elegidos.length || (c.locales || [c.local]).some(l => elegidos.indexOf(l) >= 0))
+      .forEach(c => ops.push([c.email, c.email + (c.nombre ? ' — ' + c.nombre : '') + (c.local ? ' · ' + c.local : '')]));
+    who.innerHTML = '';
+    ops.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; who.appendChild(o); });
+    if (ops.some(o => o[0] === antes)) who.value = antes;
+  }
+  function touch() { dirty = true; status('Cambios sin guardar'); clearTimeout(pvTimer); pvTimer = setTimeout(preview, 700); }
+
+  function summary(b) {
+    const s = b.text || b.tagline || b.withName || b.alt || (b.items ? b.items.map(i => i.title).join(' · ') : '') || '';
+    return String(s).replace(/\n/g, ' ').slice(0, 70);
+  }
+
+  function renderList() {
+    const box = $('blocks');
+    box.innerHTML = '';
+    C.blocks.forEach((b, i) => {
+      const el = document.createElement('div');
+      el.className = 'blk' + (openId === b._id ? ' open' : '');
+      el.innerHTML = '<div class="bh"><div class="t"><b>' + (i + 1) + '. ' + esc((SCHEMA[b.type] || { l: b.type }).l) + '</b><span>' + esc(summary(b)) + '</span></div>' +
+        (readOnly ? '' : '<button class="sm" data-a="up" title="Subir">↑</button><button class="sm" data-a="down" title="Bajar">↓</button><button class="sm" data-a="dup" title="Duplicar">⧉</button><button class="sm danger" data-a="del" title="Quitar">✕</button>') + '</div><div class="bb"></div>';
+      el.querySelector('.bh').onclick = ev => {
+        const a = ev.target.dataset && ev.target.dataset.a;
+        if (a) { ev.stopPropagation(); act(a, i); return; }
+        openId = openId === b._id ? null : b._id; renderList();
+      };
+      if (openId === b._id) buildForm(el.querySelector('.bb'), b, SCHEMA[b.type].f, () => { el.querySelector('.t span').textContent = summary(b); });
+      box.appendChild(el);
+    });
+  }
+
+  function act(a, i) {
+    const B = C.blocks;
+    if (a === 'up' && i > 0) [B[i - 1], B[i]] = [B[i], B[i - 1]];
+    if (a === 'down' && i < B.length - 1) [B[i + 1], B[i]] = [B[i], B[i + 1]];
+    if (a === 'dup') { const c = JSON.parse(JSON.stringify(B[i])); c._id = 'b' + (++seq); B.splice(i + 1, 0, c); openId = c._id; }
+    if (a === 'del') { B.splice(i, 1); }
+    renderList(); touch();
+  }
+
+  function addBlock() {
+    const t = $('addType').value;
+    const b = Object.assign({ type: t, _id: 'b' + (++seq) }, SCHEMA[t].d());
+    const idx = C.blocks.findIndex(x => x._id === openId);
+    if (idx >= 0) C.blocks.splice(idx + 1, 0, b); else C.blocks.push(b);
+    openId = b._id; renderList(); touch();
+  }
+
+  function buildForm(host, obj, fields, onChange) {
+    fields.forEach(f => {
+      if (f.t === 'items') return buildItems(host, obj, onChange);
+      const wrap = document.createElement('div');
+      if (f.t !== 'check') wrap.innerHTML = '<label>' + esc(f.l) + '</label>';
+      let input;
+      if (f.t === 'text') { input = document.createElement('input'); input.type = 'text'; input.value = obj[f.k] == null ? '' : obj[f.k]; }
+      if (f.t === 'area') { input = document.createElement('textarea'); input.rows = 5; input.value = obj[f.k] || ''; }
+      if (f.t === 'sel') { input = document.createElement('select'); f.o.forEach(([v, t]) => { const o = document.createElement('option'); o.value = v; o.textContent = t; input.appendChild(o); }); input.value = String(obj[f.k] == null ? f.o[0][0] : obj[f.k]); }
+      if (f.t === 'check') { const lb = document.createElement('label'); lb.style.color = 'var(--tx)'; input = document.createElement('input'); input.type = 'checkbox'; input.checked = !!obj[f.k]; lb.appendChild(input); lb.appendChild(document.createTextNode(' ' + f.l)); wrap.appendChild(lb); }
+      if (f.t === 'image') {
+        const r = document.createElement('div'); r.className = 'imgrow';
+        input = document.createElement('input'); input.type = 'text'; input.placeholder = 'Enlace/ID de Drive o URL https'; input.value = obj[f.k] || '';
+        const up = document.createElement('button'); up.className = 'sm'; up.textContent = 'Subir'; up.disabled = readOnly;
+        up.onclick = () => { uploadTarget = { obj, k: f.k, input }; $('fileIn').value = ''; $('fileIn').click(); };
+        r.appendChild(input); r.appendChild(up); wrap.appendChild(r);
+      }
+      if (f.t !== 'check' && f.t !== 'image') wrap.appendChild(input);
+      input.disabled = readOnly;
+      const handler = () => { obj[f.k] = f.t === 'check' ? input.checked : (f.k === 'width' || f.k === 'height' ? Number(input.value) : input.value); onChange && onChange(); touch(); };
+      input.addEventListener(f.t === 'sel' || f.t === 'check' ? 'change' : 'input', handler);
+      host.appendChild(wrap);
+    });
+  }
+
+  function buildItems(host, obj, onChange) {
+    obj.items = obj.items || [];
+    obj.items.forEach((it, j) => {
+      const box = document.createElement('div'); box.className = 'item';
+      box.innerHTML = '<div class="row"><b style="flex:1;color:var(--petd)">Ítem ' + (j + 1) + '</b>' + (readOnly ? '' : '<button class="sm danger" style="flex:0">Quitar</button>') + '</div>';
+      const rm = box.querySelector('button');
+      if (rm) rm.onclick = () => { obj.items.splice(j, 1); renderList(); touch(); };
+      buildForm(box, it, ITEM_F, onChange);
+      host.appendChild(box);
+    });
+    if (!readOnly && obj.items.length < 3) {
+      const add = document.createElement('button'); add.className = 'sm'; add.style.marginTop = '8px'; add.textContent = '+ Agregar ítem';
+      add.onclick = () => { obj.items.push(newItem()); renderList(); touch(); };
+      host.appendChild(add);
+    }
+  }
+
+  $('fileIn').onchange = () => {
+    const f = $('fileIn').files[0]; if (!f || !uploadTarget) return;
+    status('Subiendo imagen…');
+    optimize(f).then(dataUrl => {
+      SRV().withSuccessHandler(id => {
+        uploadTarget.obj[uploadTarget.k] = id; uploadTarget.input.value = id;
+        imgCache[id] = dataUrl; touch(); status('Imagen subida');
+      }).withFailureHandler(e => status('Error: ' + e.message)).editorUploadImage(f.name.replace(/\.[^.]+$/, '') + (dataUrl.indexOf('image/png') > 0 ? '.png' : dataUrl.indexOf('image/gif') > 0 ? '.gif' : '.jpg'), dataUrl);
+    }).catch(e => status('Error: ' + e));
+  };
+
+  function readUrl(f) { return new Promise((ok, ko) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = ko; r.readAsDataURL(f); }); }
+  function optimize(f) {
+    if (f.type === 'image/gif') return readUrl(f);
+    return readUrl(f).then(src => new Promise((ok, ko) => {
+      const img = new Image();
+      img.onload = () => {
+        const max = 1200, sc = Math.min(1, max / img.width);
+        if (sc === 1 && f.size < 600 * 1024) return ok(src);
+        const cv = document.createElement('canvas'); cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+        const g = cv.getContext('2d');
+        const png = f.type === 'image/png';
+        if (!png) { g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); }
+        g.drawImage(img, 0, 0, cv.width, cv.height);
+        let out = png ? cv.toDataURL('image/png') : cv.toDataURL('image/jpeg', 0.85);
+        if (png && out.length > 1.4e6) { g.globalCompositeOperation = 'destination-over'; g.fillStyle = '#fff'; g.fillRect(0, 0, cv.width, cv.height); out = cv.toDataURL('image/jpeg', 0.85); }
+        ok(out);
+      };
+      img.onerror = () => ko('No se pudo leer la imagen');
+      img.src = src;
+    }));
+  }
+
+  function clean() { return { v: 1, subject: C.subject || '', preheader: C.preheader || '', blocks: C.blocks.map(b => { const o = Object.assign({}, b); delete o._id; return o; }) }; }
+
+  function preview() {
+    $('pst').innerHTML = '<span class="spin"></span>';
+    SRV().withSuccessHandler(html => {
+      const ids = Array.from(new Set((html.match(/drive:([a-zA-Z0-9_-]{20,})/g) || []).map(s => s.slice(6))));
+      const missing = ids.filter(id => !imgCache[id]);
+      Promise.all(missing.map(id => new Promise(ok => SRV().withSuccessHandler(d => { imgCache[id] = d; ok(); }).withFailureHandler(() => { imgCache[id] = ''; ok(); }).editorImageData(id))))
+        .then(() => {
+          const out = html.replace(/drive:([a-zA-Z0-9_-]{20,})/g, (m, id) => imgCache[id] || '');
+          $('pv').srcdoc = out; $('pst').textContent = '';
+        });
+    }).withFailureHandler(e => { $('pst').textContent = 'Error vista previa: ' + e.message; }).editorPreview(clean(), $('who').value);
+  }
+
+  function view(w) { pvWidth = w; $('pv').style.width = w + 'px'; $('vD').classList.toggle('on', w > 500); $('vM').classList.toggle('on', w < 500); }
+
+  function save(cb) {
+    if (readOnly) return;
+    $('saveBtn').disabled = true; status('Guardando…');
+    SRV().withSuccessHandler(m => { dirty = false; $('saveBtn').disabled = false; status(m); cb && cb(); })
+      .withFailureHandler(e => { $('saveBtn').disabled = false; status('Error: ' + e.message); }).editorSave(DATA.key, clean(), (!DATA_L.isTpl && DATA_L.sel) ? selActual() : null);
+  }
+  function toggleTpl() { const b = $('tplbox'); b.style.display = b.style.display === 'none' ? '' : 'none'; $('tplName').value = (DATA_L.name || '') + ' (plantilla)'; }
+  function saveTpl() {
+    SRV().withSuccessHandler(id => { status('Plantilla creada: ' + id); $('tplbox').style.display = 'none'; })
+      .withFailureHandler(e => status('Error: ' + e.message)).editorSaveAsTemplate(clean(), $('tplName').value);
+  }
+  let closeArmed = false;
+  function closeEd() {
+    if (dirty && !readOnly && !closeArmed) { closeArmed = true; status('Hay cambios sin guardar. Clic en Cerrar otra vez para salir sin guardar.'); setTimeout(() => closeArmed = false, 6000); return; }
+    if (DATA.token) { window.top.location.href = DATA.volver; return; }
+    google.script.host.close();
+  }
+  document.addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); save(); } });
+</script>
+</body></html>
