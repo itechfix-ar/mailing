@@ -302,6 +302,36 @@
   #msg .msg { animation: subir .35s ease; }
   .pie { text-align: center; color: #666; font-size: 12px; padding: 0 16px 26px; letter-spacing: 1px; }
   @media (max-width: 600px) { .hero h1 { font-size: 24px; } .hero .flota { display: none; } .hdr { padding: 10px 14px; } .hdr .sep, .hdr span.sub-hdr { display: none; } .tabs { margin: 12px 12px 0; } }
+  /* v2.7 · Calendario y consejos */
+  .prox { display: flex; align-items: center; gap: 12px; margin-top: 16px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14);
+    border-radius: 14px; padding: 10px 14px; cursor: pointer; color: #fff; transition: background .2s, transform .2s; opacity: 0; animation: subir .6s cubic-bezier(.2,.8,.2,1) .5s forwards; }
+  .prox:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); }
+  .prox .em { font-size: 26px; } .prox .tx { flex: 1; font-size: 14px; } .prox .tx small { display: block; color: #aaa; font-size: 12px; }
+  .prox .go { font-size: 12px; font-weight: bold; background: #fff; color: #000; border-radius: 20px; padding: 5px 12px; white-space: nowrap; }
+  .ya { display: inline-block; background: #fff; color: #000; font-weight: bold; font-size: 11px; border-radius: 10px; padding: 2px 8px; animation: pulsoB 1.6s ease-in-out infinite; }
+  @keyframes pulsoB { 50% { box-shadow: 0 0 0 6px rgba(255,255,255,.18); } }
+  .card .ya { background: #000; color: #fff; } .card .ya { animation-name: pulsoN; } @keyframes pulsoN { 50% { box-shadow: 0 0 0 5px rgba(0,0,0,.12); } }
+  .mes-t { color: #fff; font: 800 13px Arial, sans-serif; letter-spacing: 3px; text-transform: uppercase; margin: 22px 4px 10px; display: flex; align-items: center; gap: 10px; }
+  .mes-t::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,.35), transparent); }
+  .fecha { display: flex; gap: 14px; align-items: center; padding: 12px 14px; margin-bottom: 10px; }
+  .fecha .chip { flex: 0 0 58px; height: 62px; border-radius: 12px; background: #000; color: #fff; text-align: center; display: flex; flex-direction: column; justify-content: center; }
+  .fecha .chip b { font-size: 24px; line-height: 1; } .fecha .chip small { font-size: 11px; letter-spacing: 2px; color: #bbb; margin-top: 3px; }
+  .fecha .info { flex: 1; min-width: 0; } .fecha .info h4 { margin: 0 0 3px; font-size: 15px; } .fecha .info .sub { font-size: 13px; }
+  .fecha .lado { text-align: right; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+  .faltan { font-size: 12px; color: var(--mut); white-space: nowrap; } .faltan b { color: #000; font-size: 16px; }
+  .prox-big { display: flex; gap: 18px; align-items: center; background: #fff; border-radius: 18px; padding: 18px 20px; margin-bottom: 6px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+  .prox-big .em { font-size: 54px; animation: flota 3.4s ease-in-out infinite; } .prox-big h2 { margin: 2px 0 4px; font-size: 22px; }
+  .prox-big .cuenta { margin-left: auto; text-align: center; background: #000; color: #fff; border-radius: 14px; padding: 10px 16px; }
+  .prox-big .cuenta b { display: block; font-size: 34px; line-height: 1; } .prox-big .cuenta small { font-size: 11px; color: #bbb; letter-spacing: 1px; }
+  .tips-g { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+  .tip-c { background: #fff; border-radius: 14px; padding: 14px 16px; box-shadow: 0 10px 30px rgba(0,0,0,.45); opacity: 0; animation: subir .55s cubic-bezier(.2,.8,.2,1) forwards; }
+  .tip-c .e { font-size: 26px; } .tip-c b { display: block; margin: 6px 0 4px; font-size: 14px; } .tip-c p { margin: 0; font-size: 13px; line-height: 1.5; color: #333; }
+  .cons { list-style: none; padding: 0; margin: 8px 0 0; } .cons li { display: flex; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 13px; line-height: 1.45; }
+  .cons li:first-child { border-top: 0; } .cons li .i { font-size: 18px; flex: 0 0 22px; } .cons li b { display: block; font-size: 13px; }
+  .tipcorto { margin-top: 8px; font-size: 13px; background: #F4F4F4; border-radius: 8px; padding: 7px 10px; }
+  .sec-t { color: #fff; font: 800 18px Arial, sans-serif; margin: 22px 2px 10px; }
+  .sec-t small { display: block; color: #9a9a9a; font: 13px Arial, sans-serif; margin-top: 3px; }
+  @media (max-width: 600px) { .fecha .lado { display: none; } .fecha { cursor: pointer; } .prox-big { padding: 16px; gap: 12px; align-items: flex-start; } .prox-big .em { display: none; } .prox-big h2 { font-size: 19px; } .prox-big .cuenta { padding: 8px 10px; } .prox-big .cuenta b { font-size: 26px; } .prox .go { display: none; } }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 </style></head>
 <body>
@@ -318,17 +348,36 @@
     <p class="entra" style="animation-delay:.35s">¿Qué le mandamos hoy a los clientes de iTech?</p>
     <div class="flota" aria-hidden="true"><span>📨</span><span>🎁</span><span>📱</span><span>🚀</span></div>
     <div class="linea"></div>
+    <div id="proxFecha"></div>
   </div>
   <div class="tabs">
     <button id="t1" class="on" onclick="tab(1)">📨 Campañas</button>
     <button id="t2" onclick="tab(2)">➕ Nueva campaña</button>
+    <button id="t5" onclick="tab(5)">📅 Calendario</button>
+    <button id="t6" onclick="tab(6)">💡 Consejos</button>
     <button id="t3" onclick="tab(3)">✍️ Firma de los mails</button>
     <button id="t4" onclick="tab(4)">🎓 Cómo se usa</button>
     <span class="ind" id="tabInd"></span>
   </div>
   <div class="wrap">
     <div id="msg"></div>
-    <div id="p1"><div class="vacio"><span class="spin"></span> Cargando…</div></div>
+    <div id="p1"><div id="consejoTop"></div><div id="lista"><div class="vacio"><span class="spin"></span> Cargando…</div></div></div>
+
+    <div id="p5" style="display:none">
+      <div class="sec-t" style="margin-top:4px">📅 Fechas importantes del año<small>Las fechas para preparar campañas, ordenadas por la que viene. Tocá <b style="color:#fff">Crear campaña</b> y se abre con la plantilla sugerida.</small></div>
+      <div id="fechasProx"></div>
+      <div class="actions" style="justify-content:flex-start;margin:14px 0 0"><button onclick="nuevaFecha()" style="background:#fff;border-color:#fff">➕ Agregar una fecha</button></div>
+      <div id="fechasLista"><div class="vacio"><span class="spin"></span> Cargando…</div></div>
+    </div>
+
+    <div id="p6" style="display:none">
+      <div class="sec-t" style="margin-top:4px">💡 Consejos para mejorar<small>Salen de los resultados reales de las campañas. Leelos antes de armar la próxima.</small></div>
+      <div id="consUlt"><div class="vacio"><span class="spin"></span> Analizando la última campaña…</div></div>
+      <div class="sec-t">📊 Cómo le fue a cada campaña<small>Un consejo rápido para cada una. Tocá Ver resultados para el detalle.</small></div>
+      <div id="consCamp"></div>
+      <div class="sec-t">⭐ Claves que siempre funcionan</div>
+      <div class="tips-g" id="consGen"></div>
+    </div>
 
     <div id="p2" style="display:none">
       <div class="card">
@@ -408,7 +457,7 @@
         <div class="slide">
           <div class="demo"><div class="phone"><div class="scr"><div class="notif">✉️ <b>[PRUEBA] 🎄 Regalos tech…</b><br>iTech Fix &amp; Accesories</div><div style="padding:60px 10px 0;font-size:11px;color:#999;text-align:center">📱 tu celular</div></div></div></div>
           <div class="txt"><div class="ico">🧪</div><h2>Paso 5 · Mandate una prueba</h2>
-            <p>En <b>📨 Campañas</b>, tocá <b>🧪 Mandarme una prueba</b>. Te llega el mail <b>a vos</b> (dice [PRUEBA] adelante).</p>
+            <p>En <b>📨 Campañas</b>, tocá <b>🧪 Mandar una prueba</b> y elegí a quién: <b>a vos</b>, a <b>compañeras del equipo</b> y/o a <b>otros mails</b> (por ejemplo, a tu encargado para que la apruebe). Llega con [PRUEBA] adelante.</p>
             <p>Abrilo en el <b>celular</b> y revisá: ¿se lee bien? ¿están bien los precios y las fechas? ¿los botones abren la página correcta?</p>
             <div class="tip">💡 Si cambiás algo, mandate otra prueba: el sistema no deja programar sin una prueba de la última versión.</div></div>
         </div>
@@ -441,6 +490,18 @@
         </div>
 
         <div class="slide">
+          <div class="demo"><div class="cal" style="width:230px;text-align:left">
+            <div style="display:flex;gap:8px;align-items:center;margin:4px 0"><span style="background:#000;color:#fff;border-radius:8px;padding:4px 7px;font-weight:bold">18<br><small style="font-size:9px">OCT</small></span><span>💐 <b>Día de la Madre</b><br><span class="ya" style="background:#000;color:#fff">⏰ ¡Preparala ya!</span></span></div>
+            <div style="display:flex;gap:8px;align-items:center;margin:8px 0"><span style="background:#000;color:#fff;border-radius:8px;padding:4px 7px;font-weight:bold">31<br><small style="font-size:9px">OCT</small></span><span>🎃 <b>Halloween</b><br><small class="muted">faltan 10 días</small></span></div>
+            <div style="border-top:1px solid #ddd;margin-top:8px;padding-top:8px">💡 <b>Para la próxima:</b><br><small>Asunto más corto, con el beneficio adelante.</small></div></div></div>
+          <div class="txt"><div class="ico">📅</div><h2>Calendario y consejos</h2>
+            <p>En <b>📅 Calendario</b> están las <b>fechas importantes del año</b> (Día de la Madre, Navidad, Hot Sale…) con cuántos días faltan. Cuando dice <b>⏰ ¡Preparala ya!</b>, es momento de armar la campaña: tocá <b>Crear campaña</b> y se abre con la plantilla justa.</p>
+            <p>¿Falta una fecha? Tocá <b>➕ Agregar una fecha</b> (por ejemplo, el aniversario de un local).</p>
+            <p>En <b>💡 Consejos</b> ves qué mejorar según cómo le fue a la última campaña.</p>
+            <div class="tip">💡 Arriba de todo, en <b>📨 Campañas</b>, siempre vas a ver la próxima fecha y el consejo más importante.</div></div>
+        </div>
+
+        <div class="slide">
           <div class="demo"><div style="text-align:center;font-size:60px"><span class="salta">🏆</span></div>
             <i class="confeti" style="left:30px;background:#000;animation-delay:0s"></i><i class="confeti" style="left:90px;background:#E0A100;animation-delay:.6s"></i><i class="confeti" style="left:150px;background:#999;animation-delay:1.2s"></i><i class="confeti" style="left:210px;background:#000;animation-delay:.3s"></i><i class="confeti" style="left:270px;background:#E0A100;animation-delay:.9s"></i><i class="confeti" style="left:320px;background:#999;animation-delay:1.5s"></i></div>
           <div class="txt"><div class="ico">⭐</div><h2>Reglas de oro</h2>
@@ -456,6 +517,9 @@
 
       <h3 style="margin:22px 0 10px">❓ Preguntas frecuentes</h3>
       <div class="faq">
+        <details><summary>¿Puedo mandar la prueba a más de una persona?</summary><p>Sí. Al tocar <b>🧪 Mandar una prueba</b> tildás <b>A mí</b>, elegís <b>compañeras del equipo</b> y, si querés, escribís <b>otros mails</b> separados por coma. Hasta 6 por prueba. La próxima vez te acuerda lo que elegiste.</p></details>
+        <details><summary>¿Cómo agrego una fecha al calendario?</summary><p>En <b>📅 Calendario</b> tocá <b>➕ Agregar una fecha</b>, poné el nombre, elegí el día y si se repite todos los años. Queda guardada en la planilla y la ven todas. Para cambiarla o sacarla, pedíselo a quien administra el mailing.</p></details>
+        <details><summary>¿De dónde salen los consejos?</summary><p>De los resultados reales: cuántos la abrieron, cuántos tocaron un botón y a qué hora. Por eso aparecen después de que sale la primera campaña. Los de <b>⭐ Claves que siempre funcionan</b> sirven siempre.</p></details>
         <details><summary>¿Le puede llegar algo a los clientes mientras pruebo?</summary><p>No. Mientras la campaña está en <b>Borrador</b> no sale nada. Las pruebas te llegan solo a vos. Recién cuando tocás <b>Programar envío</b> y confirmás, se manda.</p></details>
         <details><summary>Me equivoqué y ya la programé, ¿qué hago?</summary><p>Avisale enseguida a quien administra el mailing: desde la planilla la puede <b>pausar o cancelar</b> antes de que salga (o frenar lo que falta enviar).</p></details>
         <details><summary>¿Por qué no veo cuántos clientes tiene cada local?</summary><p>Porque la base de clientes es información privada de la empresa. El sistema elige solo a quién mandarle y se encarga de no repetir, no mandar a quienes se dieron de baja ni a mails que no existen.</p></details>
@@ -471,16 +535,16 @@
   const DATA = { token: CLAVE, nombre: '', base: '', web: true }; if (!CLAVE) { document.addEventListener('DOMContentLoaded', function () { document.body.innerHTML = '<div style="font-family:Arial;max-width:480px;margin:60px auto;padding:20px;text-align:center"><h2>Falta tu link personal</h2><p>Abrí el portal desde el link que te llegó por mail (o pedíselo a quien administra el mailing).</p></div>'; }); }
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-  let INI = null, tplSel = '';
+  let INI = null, tplSel = '', FECHAS = [], CAMPS = [], CONS = null, consPidiendo = false;
   function api(accion, args) {
     return new Promise((ok, ko) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => ko(e)).portalCall(DATA.token, accion, args || []));
   }
   function aviso(t, tipo) { $('msg').innerHTML = t ? '<div class="msg ' + (tipo || 'ok') + '"></div>' : ''; if (t) { $('msg').firstChild.textContent = t; window.scrollTo(0, 0); } }
   function moverInd() { const b = document.querySelector('.tabs button.on'), ind = $('tabInd'); if (!b || !ind) return; ind.style.left = b.offsetLeft + 'px'; ind.style.width = b.offsetWidth + 'px'; }
   function tab(n) {
-    [1, 2, 3, 4].forEach(i => { const p = $('p' + i); p.style.display = i === n ? '' : 'none'; p.classList.remove('panel-on'); $('t' + i).classList.toggle('on', i === n); });
+    [1, 2, 3, 4, 5, 6].forEach(i => { const p = $('p' + i); p.style.display = i === n ? '' : 'none'; p.classList.remove('panel-on'); $('t' + i).classList.toggle('on', i === n); });
     void $('p' + n).offsetWidth; $('p' + n).classList.add('panel-on');
-    moverInd(); aviso(''); if (n === 4) tutIr(TUT); window.scrollTo(0, 0);
+    moverInd(); aviso(''); if (n === 4) tutIr(TUT); if (n === 6) cargarConsejos(); window.scrollTo(0, 0);
   }
   window.addEventListener('resize', moverInd); window.addEventListener('load', moverInd); setTimeout(moverInd, 50);
   /* ---- Tutorial ---- */
@@ -513,7 +577,9 @@
     pintarTpls(); pintarCampanias(d.campanias);
     $('fNombre').value = d.firma.nombre; $('fTel').value = d.firma.telefono;
     $('fActual').textContent = 'Ahora: ' + d.firma.nombre + ' · ' + d.firma.telefono + (d.firma.whatsapp ? ' · WhatsApp ' + d.firma.whatsapp : '');
-  }).catch(e => { $('p1').innerHTML = '<div class="msg err"></div>'; $('p1').firstChild.textContent = e.message; });
+    FECHAS = d.fechas || []; pintarFechas();
+    setTimeout(cargarConsejos, 400);
+  }).catch(e => { $('lista').innerHTML = '<div class="msg err"></div>'; $('lista').firstChild.textContent = e.message; });
 
   function pintarTpls() {
     const q = ($('buscar').value || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -523,15 +589,17 @@
   }
 
   function pintarCampanias(L) {
-    if (!L.length) { $('p1').innerHTML = '<div class="vacio">Todavía no hay campañas. Creá la primera en <b>➕ Nueva campaña</b>.</div>'; return; }
-    $('p1').innerHTML = L.map(c => {
+    CAMPS = L; pintarConsCamp();
+    if (!L.length) { $('lista').innerHTML = '<div class="vacio">Todavía no hay campañas. Creá la primera en <b>➕ Nueva campaña</b>.</div>'; return; }
+    $('lista').innerHTML = L.map(c => {
       let botones = '';
       if (c.estadoReal === 'Borrador') {
-        botones = '<button onclick="irEditor(\'' + c.id + '\')">✏️ Editar</button><button onclick="prueba(\'' + c.id + '\')">🧪 Mandarme una prueba</button>' +
+        botones = '<button onclick="irEditor(\'' + c.id + '\')">✏️ Editar</button><button onclick="prueba(\'' + c.id + '\')">🧪 Mandar una prueba</button>' +
           '<button class="primary" onclick="programar(\'' + c.id + '\', ' + c.pruebaOk + ')">🚀 ' + (INI.aprobacion ? 'Pedir envío' : 'Programar envío') + '</button>' +
           '<button class="danger" onclick="borrar(\'' + c.id + '\')">🗑️</button>';
       } else if (c.enviada) botones = '<button class="primary" onclick="resultados(\'' + c.id + '\')">📊 Ver resultados</button>';
-      const kp = c.enviada ? '<div style="margin-top:8px"><span class="kp"><b>' + (c.apertura == null ? '—' : c.apertura + '%') + '</b>la abrieron</span><span class="kp"><b>' + (c.clic == null ? '—' : c.clic + '%') + '</b>hizo clic</span></div>' : '';
+      const tc = c.enviada ? consejoCorto(c) : '';
+      const kp = c.enviada ? '<div style="margin-top:8px"><span class="kp"><b>' + (c.apertura == null ? '—' : c.apertura + '%') + '</b>la abrieron</span><span class="kp"><b>' + (c.clic == null ? '—' : c.clic + '%') + '</b>hizo clic</span></div>' + (tc ? '<div class="tipcorto">' + tc + '</div>' : '') : '';
       return '<div class="card"><h4>' + esc(c.nombre) + ' <span class="badge b-' + esc(c.estado.split(' ')[0]) + '">' + esc(c.estado) + '</span></h4>' +
         '<div class="sub">' + esc(c.asunto) + '</div><div class="sub">📍 ' + esc(c.locales || 'Sin locales') + (c.programada ? ' · 🗓️ ' + esc(c.programada) : '') + (c.creadaPor ? ' · 👤 ' + esc(c.creadaPor) : '') +
         (c.estadoReal === 'Borrador' ? ' · ' + (c.pruebaOk ? '✅ prueba al día' : '🧪 falta prueba') : '') + '</div>' + kp + '<div class="row2">' + botones + '</div></div>';
@@ -545,7 +613,24 @@
     $('crearBtn').disabled = true; aviso('Creando la campaña…');
     api('crear', [$('nombre').value, $('asunto').value, tplSel, locs]).then(id => irEditor(id)).catch(e => { $('crearBtn').disabled = false; aviso(e.message, 'err'); });
   }
-  function prueba(id) { aviso('Mandando la prueba…'); api('prueba', [id]).then(t => { aviso(t); recargar(); }).catch(e => aviso(e.message, 'err')); }
+  /* 🧪 Prueba: a mí, a compañeras del equipo y a otros mails */
+  function prueba(id) {
+    let ult = {}; try { ult = JSON.parse(localStorage.getItem('itech_prueba_ult') || '{}'); } catch (e) { }
+    const eq = (INI && INI.equipo) || [];
+    modal('<h3>🧪 ¿A quién le mandamos la prueba?</h3><div class="muted">Le llega con [PRUEBA] en el asunto. A los clientes no les llega nada.</div>' +
+      '<label class="chk" style="display:flex;gap:8px;align-items:center;margin-top:14px;color:#222;font-size:14px"><input type="checkbox" id="prYo" style="width:auto"' + (ult.yo === false ? '' : ' checked') + '> 📩 A mí <span class="muted">(' + esc((INI && INI.mail) || '') + ')</span></label>' +
+      (eq.length ? '<label style="margin-top:12px">👩‍💼 A compañeras del equipo</label><div class="locs" id="prEq">' + eq.map(n => '<label><input type="checkbox" value="' + esc(n) + '"' + ((ult.equipo || []).indexOf(n) >= 0 ? ' checked' : '') + '> ' + esc(n) + '</label>').join('') + '</div>' : '') +
+      '<label style="margin-top:12px">✉️ Otros mails <span class="muted">(opcional, separados por coma)</span></label><textarea id="prOtros" rows="2" placeholder="Ej.: gerente@gmail.com, otra@itech.com">' + esc(ult.otros || '') + '</textarea>' +
+      '<div class="muted" style="margin-top:6px">Hasta ' + ((INI && INI.pruebaMax) || 6) + ' mails por prueba.</div>' +
+      '<div id="prOut"></div><div class="actions"><button onclick="cerrar()">Cancelar</button><button class="primary" id="prOk">🧪 Mandar prueba</button></div>');
+    $('prOk').onclick = () => {
+      const opc = { yo: $('prYo').checked, equipo: Array.from(document.querySelectorAll('#prEq input:checked')).map(x => x.value), otros: $('prOtros').value.trim() };
+      try { localStorage.setItem('itech_prueba_ult', JSON.stringify(opc)); } catch (e) { }
+      $('prOk').disabled = true; $('prOut').innerHTML = '<div class="msg ok"><span class="spin"></span> Mandando la prueba…</div>';
+      api('prueba', [id, opc]).then(t => { cerrar(); aviso(t); recargar(); })
+        .catch(e => { $('prOk').disabled = false; $('prOut').innerHTML = '<div class="msg err"></div>'; $('prOut').firstChild.textContent = e.message; });
+    };
+  }
   function borrar(id) { if (!confirm('¿Borrar este borrador?')) return; api('borrar', [id]).then(t => { aviso(t); recargar(); }).catch(e => aviso(e.message, 'err')); }
   function programar(id, pruebaOk) {
     if (!pruebaOk) return aviso('Antes de programar, mandate una prueba (🧪) y revisala en el celular.', 'warn');
@@ -573,13 +658,101 @@
         '<div style="text-align:center;margin:16px 0"><div class="big">' + r.abrieron + '%</div><div class="muted">la abrió (de cada 10 personas, ' + Math.round(r.abrieron / 10) + ' la abrieron)</div></div>' +
         fila('📬 Llegó a la bandeja', r.llegaron) + fila('👀 La abrieron', r.abrieron) + fila('👆 Hicieron clic (de los que abrieron)', r.clic) +
         (r.enlaceTop ? '<p class="muted">Lo más tocado: ' + esc(r.enlaceTop) + '</p>' : '') +
-        (r.consejos.length ? '<h4>💡 Para la próxima</h4><ul style="padding-left:18px;font-size:13px">' + r.consejos.map(c => '<li>' + esc(c) + '</li>').join('') + '</ul>' : '') +
+        (r.consejos.length ? '<h4 style="margin:16px 0 0">💡 Para la próxima</h4>' + listaConsejos(r.consejos) : '') +
         '<div class="actions"><button onclick="cerrar()">Cerrar</button></div>');
     }).catch(e => modal('<div class="msg err">' + esc(e.message) + '</div><div class="actions"><button onclick="cerrar()">Cerrar</button></div>'));
   }
   function guardarFirma() {
     aviso('Guardando…');
     api('firma', [$('fNombre').value, $('fTel').value, $('fWa').checked]).then(t => { aviso(t); $('fActual').textContent = 'Ahora: ' + $('fNombre').value + ' · ' + $('fTel').value; }).catch(e => aviso(e.message, 'err'));
+  }
+
+  /* ---------- 💡 Consejos ---------- */
+  const ICO_C = { ok: '⭐', warn: '👍', bad: '💡', info: '📌' };
+  function listaConsejos(L) { return '<ul class="cons">' + L.map(c => '<li><span class="i">' + (ICO_C[c.tipo] || '💡') + '</span><span><b>' + esc(c.tema) + '</b>' + esc(c.texto) + '</span></li>').join('') + '</ul>'; }
+  function consejoCorto(c) {
+    if (c.apertura == null) return '';
+    if (c.apertura < 15) return '💡 <b>Para la próxima:</b> probá un asunto más corto, con el beneficio adelante y un emoji.';
+    if (c.clic != null && c.clic < 10) return '💡 <b>Para la próxima:</b> la abrieron, pero tocaron poco. Dejá un solo botón bien visible arriba.';
+    if (c.apertura >= 30) return '⭐ <b>¡Muy buena apertura!</b> Usá este asunto como ejemplo para las próximas.';
+    return '👍 <b>Apertura normal.</b> Para subirla, probá otro horario o poné el local en el asunto.';
+  }
+  function cargarConsejos() {
+    if (CONS) { pintarConsejos(); return; }
+    if (consPidiendo) return; consPidiendo = true;
+    api('consejos').then(d => { CONS = d; consPidiendo = false; pintarConsejos(); })
+      .catch(e => { consPidiendo = false; $('consUlt').innerHTML = '<div class="msg err"></div>'; $('consUlt').firstChild.textContent = e.message; });
+  }
+  function pintarConsejos() {
+    const u = CONS.ultima;
+    const prin = u ? u.consejos.filter(c => c.tipo !== 'info').concat(u.consejos.filter(c => c.tipo === 'info')) : [];
+    $('consUlt').innerHTML = u ? '<div class="card"><h4>De la última campaña: ' + esc(u.nombre) + '</h4><div class="sub">' + esc(u.asunto) + (u.enviada ? ' · enviada el ' + esc(u.enviada) : '') + '</div>' + listaConsejos(prin) +
+      '<div class="row2"><button onclick="resultados(\'' + u.id + '\')">📊 Ver resultados</button></div></div>'
+      : '<div class="card"><h4>Todavía no hay campañas enviadas</h4><div class="sub">Cuando salga la primera, acá vas a ver qué funcionó y qué mejorar. Mientras tanto, mirá las claves de abajo. 👇</div></div>';
+    $('consGen').innerHTML = CONS.generales.map((g, i) => '<div class="tip-c" style="animation-delay:' + (0.05 * i) + 's"><div class="e">' + g.e + '</div><b>' + esc(g.t) + '</b><p>' + esc(g.x) + '</p></div>').join('');
+    const top = prin.filter(c => c.tipo !== 'info').slice(0, 2);
+    $('consejoTop').innerHTML = u && top.length ? '<div class="card"><h4><span class="ya" style="animation:none">💡 CONSEJO</span> Para tu próxima campaña</h4><div class="sub">Según cómo le fue a "' + esc(u.nombre) + '"</div>' + listaConsejos(top) +
+      '<div class="row2"><button onclick="tab(6)">Ver todos los consejos →</button></div></div>' : '';
+    pintarConsCamp();
+  }
+  function pintarConsCamp() {
+    if (!$('consCamp')) return;
+    const L = CAMPS.filter(c => c.enviada);
+    $('consCamp').innerHTML = L.length ? L.map(c => '<div class="card"><h4>' + esc(c.nombre) + '</h4><div class="sub">' + esc(c.asunto) + '</div>' +
+      '<div style="margin-top:8px"><span class="kp"><b>' + (c.apertura == null ? '—' : c.apertura + '%') + '</b>la abrieron</span><span class="kp"><b>' + (c.clic == null ? '—' : c.clic + '%') + '</b>hizo clic</span></div>' +
+      (consejoCorto(c) ? '<div class="tipcorto">' + consejoCorto(c) + '</div>' : '') + '<div class="row2"><button onclick="resultados(\'' + c.id + '\')">📊 Ver resultados</button></div></div>').join('')
+      : '<div class="vacio">Todavía no hay campañas enviadas.</div>';
+  }
+
+  /* ---------- 📅 Calendario ---------- */
+  function faltanTxt(n) { return n === 0 ? '<b>¡Hoy!</b>' : n === 1 ? '<b>Mañana</b>' : 'faltan <b>' + n + '</b> días'; }
+  function pintarFechas() {
+    const F = FECHAS;
+    const prox = F[0];
+    $('proxFecha').innerHTML = prox && prox.faltan <= 60 ? '<div class="prox" onclick="tab(5)"><span class="em">' + esc(prox.emoji || '📅') + '</span><div class="tx">Se viene <b>' + esc(prox.evento) + '</b> el ' + esc(prox.diaSemana) + ' ' + prox.dia + ' de ' + esc(prox.mesLargo) +
+      '<small>' + (prox.faltan <= prox.prep ? '⏰ ¡Es momento de prepararla! ' : '') + faltanTxt(prox.faltan).replace(/<\/?b>/g, '') + '</small></div><span class="go">Ver calendario →</span></div>' : '';
+    if (!F.length) { $('fechasProx').innerHTML = ''; $('fechasLista').innerHTML = '<div class="vacio">No hay fechas cargadas. Agregá la primera con ➕.</div>'; return; }
+    $('fechasProx').innerHTML = '<div class="prox-big entra"><span class="em">' + esc(prox.emoji || '📅') + '</span><div><div class="muted" style="letter-spacing:2px;font-size:11px">LA QUE VIENE</div><h2>' + esc(prox.evento) + '</h2>' +
+      '<div class="sub">' + esc(prox.diaSemana) + ' ' + prox.dia + ' de ' + esc(prox.mesLargo) + ' de ' + prox.anio + (prox.idea ? ' · ' + esc(prox.idea) : '') + '</div>' +
+      '<div class="row2">' + (prox.faltan <= prox.prep ? '<span class="ya">⏰ ¡Preparala ya!</span>' : '') + '<button class="primary" onclick="crearDesdeFecha(0)">✨ Crear campaña</button></div></div>' +
+      '<div class="cuenta"><b>' + prox.faltan + '</b><small>' + (prox.faltan === 1 ? 'DÍA' : 'DÍAS') + '</small></div></div>';
+    let mes = '', h = '';
+    F.forEach((f, i) => {
+      const m = f.mesLargo + ' ' + f.anio;
+      if (m !== mes) { mes = m; h += '<div class="mes-t">' + esc(f.mesLargo) + (f.anio !== new Date().getFullYear() ? ' ' + f.anio : '') + '</div>'; }
+      h += '<div class="card fecha" onclick="if(window.innerWidth<=600)crearDesdeFecha(' + i + ')"><div class="chip"><b>' + f.dia + '</b><small>' + esc(f.mes) + '</small></div>' +
+        '<div class="info"><h4>' + esc(f.emoji) + ' ' + esc(f.evento) + '</h4><div class="sub">' + esc(f.diaSemana) + (f.repite ? '' : ' · solo este año') + (f.idea ? ' · ' + esc(f.idea) : '') + '</div>' +
+        (f.notas ? '<div class="sub" style="font-size:12px">📌 ' + esc(f.notas) + '</div>' : '') + (f.cargadaPor && f.cargadaPor !== 'Sistema' ? '<div class="sub" style="font-size:12px">👤 Agregada por ' + esc(f.cargadaPor) + '</div>' : '') + '</div>' +
+        '<div class="lado"><span class="faltan">' + faltanTxt(f.faltan) + '</span>' + (f.faltan <= f.prep ? '<span class="ya">⏰ ¡Preparala ya!</span>' : '') +
+        '<button class="sm" onclick="event.stopPropagation();crearDesdeFecha(' + i + ')">✨ Crear campaña</button></div></div>';
+    });
+    $('fechasLista').innerHTML = h;
+  }
+  function crearDesdeFecha(i) {
+    const f = FECHAS[i]; if (!f) return;
+    tab(2);
+    $('nombre').value = f.evento + ' ' + f.anio;
+    $('buscar').value = f.plantillaId ? '' : f.evento.split(' ')[0];
+    if (f.plantillaId) tplSel = f.plantillaId;
+    pintarTpls();
+    aviso((f.plantillaId ? 'Te dejé elegida la plantilla "' + f.plantillaNombre + '". ' : 'Elegí una plantilla para "' + f.evento + '". ') + 'Marcá los locales y tocá Crear y editar.');
+    const on = document.querySelector('.tpl.on'); if (on) on.scrollIntoView({ block: 'nearest' });
+  }
+  function nuevaFecha() {
+    modal('<h3>➕ Agregar una fecha al calendario</h3><div class="muted">Queda guardada en la planilla y la ven todas.</div>' +
+      '<label>¿Qué fecha es?</label><div class="row"><input type="text" id="nfEv" maxlength="60" placeholder="Ej.: Aniversario del local de Palmas"><input type="text" id="nfEm" maxlength="4" placeholder="🎉" style="flex:0 0 64px;text-align:center"><button type="button" class="emo-btn" style="flex:0" onclick="emojiAbrir(this, \'nfEm\')">😀</button></div>' +
+      '<label>Día</label><input type="date" id="nfF">' +
+      '<label style="display:flex;gap:6px;align-items:center;margin-top:10px;color:#222"><input type="checkbox" id="nfRep" style="width:auto" checked> Se repite todos los años</label>' +
+      '<label>¿Qué podemos mandar? <span class="muted">(opcional)</span></label><textarea id="nfIdea" maxlength="300" placeholder="Ej.: promo especial por el aniversario"></textarea>' +
+      '<label>¿Con cuántos días de anticipación la preparamos?</label><select id="nfPrep"><option value="5">5 días antes</option><option value="7" selected>1 semana antes</option><option value="14">2 semanas antes</option><option value="21">3 semanas antes</option><option value="30">1 mes antes</option></select>' +
+      '<div id="nfOut"></div><div class="actions"><button onclick="cerrar()">Cancelar</button><button class="primary" id="nfOk" onclick="guardarFecha()">Guardar fecha</button></div>');
+    setTimeout(() => $('nfEv').focus(), 50);
+  }
+  function guardarFecha() {
+    const d = { evento: $('nfEv').value, emoji: $('nfEm').value, fecha: $('nfF').value, repite: $('nfRep').checked, idea: $('nfIdea').value, prep: $('nfPrep').value };
+    $('nfOk').disabled = true; $('nfOut').innerHTML = '<div class="msg ok"><span class="spin"></span> Guardando…</div>';
+    api('agregarFecha', [d]).then(r => { FECHAS = r.fechas; pintarFechas(); cerrar(); aviso(r.mensaje); })
+      .catch(e => { $('nfOk').disabled = false; $('nfOut').innerHTML = '<div class="msg err"></div>'; $('nfOut').firstChild.textContent = e.message; });
   }
 </script>
   <div class="pie">iTech · Fix &amp; Accesories</div>
