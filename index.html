@@ -62,7 +62,10 @@
 <style>
   .emo-btn { padding: 4px 8px; font-size: 15px; line-height: 1; border-color: var(--line); }
   .emo-pan { position: fixed; z-index: 9999; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.18);
-    padding: 8px; width: 300px; display: none; }
+    padding: 8px; width: 300px; max-width: calc(100vw - 12px); display: none; }
+  .emo-pan .emo-buscar { width: 100%; padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px; font: 13px Arial, sans-serif; margin-bottom: 4px; }
+  .emo-pan .emo-lista { max-height: 260px; overflow-y: auto; }
+  .emo-pan .emo-nada { font-size: 12px; color: var(--mut); padding: 10px 4px; }
   .emo-pan .g { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
   .emo-pan button { border: 0; background: none; font-size: 20px; padding: 4px 0; cursor: pointer; border-radius: 4px; }
   .emo-pan button:hover { background: var(--bg); }
@@ -74,16 +77,18 @@
 <script>
 /* Emojis: botón 😀 junto a un campo, o en el editor, inserta en el último campo de texto donde estabas escribiendo. */
 (function () {
+  /* [grupo, 'emoji palabras clave; emoji palabras clave; ...'] — el buscador busca en las palabras (sin tildes). */
   const GRUPOS = [
-    ['Promos', '🔥 💥 💸 🏷️ 🛍️ 🎁 🎉 🥳 ⭐ ✨ ⚡ 💯 🆕 ⏰ ‼️ 📣'],
-    ['Celulares', '📱 🔋 🔌 🎧 🛡️ 📦 🚚 🔧 💡 📸 ⌚ 💻'],
-    ['Fechas', '💐 🌷 🌸 🎀 ❤️ 💕 🤍 👩 👨 👶 🎄 🎅 ☀️ 🏖️ 🎓 🏆'],
-    ['Caras y manos', '👋 🙌 👏 💪 👉 👇 ✅ 😍 🤩 😉 😊 🙂 👀 🤔 🙏 ➡️ 📍']
+    ['Promos', '🔥 fuego hot sale oferta caliente; 💥 explosion impacto boom; 💸 plata dinero ahorro descuento; 💰 dinero plata bolsa; 💵 efectivo billete dolar plata; 💳 tarjeta cuotas pago credito debito; 🏷️ etiqueta precio oferta liquidacion; 🛍️ compras bolsa shopping; 🛒 carrito compra super; 🎁 regalo sorpresa obsequio; 🎉 fiesta festejo celebrar promo; 🥳 fiesta cumple celebrar; 🎊 confeti fiesta celebrar; ⭐ estrella destacado favorito; 🌟 estrella brillo destacado; ✨ brillo nuevo especial magia; ⚡ rayo rapido carga energia flash; 💯 cien perfecto total; 🆕 nuevo novedad; 🆓 gratis free; 🔝 top mejor arriba; ⏰ reloj alarma tiempo hoy urgente; ⏳ tiempo reloj arena espera ultimo; ‼️ atencion importante; ❗ atencion importante exclamacion; 📣 anuncio megafono aviso; 📢 anuncio altavoz aviso; 🚨 alerta urgente sirena; 👑 corona rey premium vip; 💎 diamante premium lujo vip; 🏆 trofeo ganador premio mejor; 🥇 medalla primero oro mejor; 🎯 objetivo diana punteria; 🔖 marcador etiqueta'],
+    ['Celulares y tech', '📱 celular telefono movil iphone samsung; 📲 celular llamada mensaje; ☎️ telefono llamada; 📞 telefono llamada; 🔋 bateria carga pila; 🪫 bateria baja descargada; 🔌 enchufe cable cargador; 🎧 auriculares musica audio; 🎵 musica nota cancion; 🎶 musica notas; 🔊 parlante sonido volumen; 🔇 silencio mute; 🛡️ escudo proteccion seguro vidrio funda; 📦 caja paquete envio pedido; 🚚 envio camion delivery entrega; 🔧 herramienta reparacion servicio tecnico llave; 🛠️ herramientas reparacion servicio tecnico; 🪛 destornillador reparacion; 💡 idea luz tip consejo; 📸 camara foto; 📷 camara foto; 🎥 video camara filmar; ⌚ reloj smartwatch; 💻 notebook computadora laptop pc; 🖥️ computadora monitor pc; ⌨️ teclado; 🖱️ mouse raton; 🎮 juego gamer joystick consola; 🕹️ joystick gamer juego; 🧲 iman magsafe magnetico; 📡 senal antena wifi; 🛜 wifi internet conexion; 📶 senal señal cobertura; 🔒 candado seguridad privado; 🔑 llave clave acceso; 🔍 lupa buscar; 🧾 ticket factura recibo; 📍 ubicacion local mapa pin; 🗺️ mapa ubicacion; 🏬 local tienda shopping negocio; 🏪 local tienda negocio; 🚗 auto coche manejar; 🚲 bici bicicleta'],
+    ['Fechas', '💐 flores ramo madre regalo; 🌷 flor tulipan primavera; 🌸 flor primavera cerezo; 🌹 rosa flor amor; 🌻 girasol flor verano; 🎀 moño lazo regalo; ❤️ corazon amor rojo; 💕 corazones amor; 💘 corazon flecha san valentin amor; 💖 corazon brillo amor; 🤍 corazon blanco; 🖤 corazon negro black friday; 💙 corazon azul; 👩 mujer madre mama; 👨 hombre padre papa; 👵 abuela; 👴 abuelo; 👶 bebe nino; 🧸 oso peluche nino juguete; 🎈 globo cumple fiesta nino; 🎂 torta cumpleanos cumple; 🍰 torta postre; 🎄 arbol navidad; 🎅 papa noel navidad; 🤶 mama noel navidad; ⛄ muñeco nieve invierno; ❄️ nieve invierno frio; ☀️ sol verano calor; 🏖️ playa verano vacaciones; 🌊 ola mar playa; 🧳 valija viaje vacaciones; ✈️ avion viaje vacaciones; 🎓 graduacion egresado estudiante; 🎒 mochila escuela colegio clases; 📚 libros escuela estudio maestro; ✏️ lapiz escuela; 🍎 manzana maestro; 🎃 calabaza halloween; 👻 fantasma halloween susto; 🐰 conejo pascuas; 🥚 huevo pascuas; 🥂 brindis copas año nuevo; 🍾 champagne festejo brindis; 🎆 fuegos artificiales año nuevo; 🎭 mascaras carnaval teatro; 🇦🇷 argentina bandera patria; ⚽ futbol pelota mundial; 🏆 copa trofeo campeon; 🤝 amigos acuerdo dia del amigo; 🧉 mate argentina; 🥩 asado carne; 🍕 pizza; ☕ cafe'],
+    ['Caras y manos', '👋 hola saludo mano; 🙌 manos festejo genial; 👏 aplausos bravo; 💪 fuerza musculo; 👍 ok bien pulgar like; 👌 ok perfecto; ✌️ paz dos victoria; 🤞 dedos suerte; 🫶 corazon manos amor; 🙏 gracias por favor rezar; 👉 señalar derecha aca; 👈 señalar izquierda; 👇 abajo señalar aca; 👆 arriba señalar; ✅ ok listo check hecho; ☑️ check listo; ❌ no error cruz; 😍 enamorado amor ojos; 🤩 estrellas wow increible; 😉 guiño; 😊 sonrisa feliz contento; 🙂 sonrisa; 😀 sonrisa feliz cara; 😃 feliz alegre; 😁 sonrisa dientes; 😂 risa llorar risa; 🤣 risa carcajada; 😎 lentes canchero cool; 🥰 amor carino; 😘 beso; 🤗 abrazo; 😅 risa nervios uy; 😮 sorpresa wow; 😱 sorpresa susto miedo; 🤯 explota cabeza increible; 🥺 por favor tierno; 😢 triste llorar; 🤔 pensar duda; 🤫 silencio secreto; 👀 ojos mirar ver; 💬 mensaje chat burbuja; ➡️ flecha derecha siguiente; ⬇️ flecha abajo; ⬆️ flecha arriba; 🔜 pronto soon; 🔥 fuego'],
+    ['Símbolos', '1️⃣ uno numero; 2️⃣ dos numero; 3️⃣ tres numero; 4️⃣ cuatro numero; 5️⃣ cinco numero; 🔟 diez numero; 💲 precio dolar signo; ➕ mas suma; ➖ menos; ✖️ por multiplicar; 🟢 verde circulo; 🔴 rojo circulo; 🔵 azul circulo; ⚫ negro circulo; ⚪ blanco circulo; ▶️ play reproducir; ⏩ rapido adelante; 🔁 repetir renovar; 🔄 actualizar cambiar; ♻️ reciclar; ⚠️ advertencia cuidado atencion; ℹ️ informacion info; ❓ pregunta duda; ❔ pregunta; 📅 calendario fecha dia; 🗓️ calendario fecha; 🕐 hora reloj; 📌 chinche fijar importante; 📎 clip adjunto; ✉️ sobre mail correo; 📧 mail correo email; 📩 mail correo recibir; 💌 carta amor mail; 🌐 web internet mundo; 🔗 link enlace; 🆗 ok; 🆙 up arriba; 🚀 cohete lanzamiento rapido; 🌈 arcoiris colores']
   ];
   let ultimo = null, fijo = null, pan = null;
   document.addEventListener('focusin', e => {
     const t = e.target;
-    if (t && !t.disabled && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text'))) ultimo = t;
+    if (t && !t.disabled && !(t.classList && t.classList.contains('emo-buscar')) && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text'))) ultimo = t;
   });
   function insertar(em) {
     const el = fijo || ultimo;
@@ -93,11 +98,37 @@
     el.focus(); el.selectionStart = el.selectionEnd = a + em.length;
     el.dispatchEvent(new Event('input', { bubbles: true }));
   }
+  const sinTilde = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
+  const ITEMS = [];
+  GRUPOS.forEach(g => g[1].split(';').forEach(x => {
+    const p = x.trim().split(/\s+/); if (!p[0]) return;
+    ITEMS.push({ e: p[0], g: g[0], k: sinTilde(g[0] + ' ' + p.slice(1).join(' ')) });
+  }));
+  const boton = e => '<button type="button" data-e="' + e + '" title="' + e + '">' + e + '</button>';
+  function pintar(q) {
+    const lista = pan.querySelector('.emo-lista');
+    const w = sinTilde(q).trim().split(/\s+/).filter(Boolean);
+    if (!w.length) {
+      lista.innerHTML = GRUPOS.map(g => '<div class="t">' + g[0] + '</div><div class="g">' +
+        ITEMS.filter(i => i.g === g[0]).map(i => boton(i.e)).join('') + '</div>').join('');
+      return;
+    }
+    const vistos = {};
+    const hall = ITEMS.filter(i => w.every(p => i.k.indexOf(p) >= 0) && !vistos[i.e] && (vistos[i.e] = 1));
+    lista.innerHTML = hall.length ? '<div class="t">Resultados (' + hall.length + ')</div><div class="g">' + hall.map(i => boton(i.e)).join('') + '</div>'
+      : '<div class="emo-nada">No encontré emojis con "' + q.replace(/[<>&"]/g, '') + '". Probá con otra palabra (ej: regalo, celular, navidad, oferta).</div>';
+  }
   function armar() {
     pan = document.createElement('div'); pan.className = 'emo-pan';
-    pan.innerHTML = GRUPOS.map(g => '<div class="t">' + g[0] + '</div><div class="g">' +
-      g[1].split(' ').map(e => '<button type="button" data-e="' + e + '">' + e + '</button>').join('') + '</div>').join('');
-    pan.addEventListener('mousedown', e => e.preventDefault());
+    pan.innerHTML = '<input type="text" class="emo-buscar" placeholder="🔍 Buscar emoji (ej: regalo, oferta, navidad)" autocomplete="off"><div class="emo-lista"></div>';
+    const bus = pan.querySelector('.emo-buscar');
+    bus.addEventListener('input', () => pintar(bus.value));
+    bus.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { pan.style.display = 'none'; }
+      if (e.key === 'Enter') { e.preventDefault(); const b = pan.querySelector('.emo-lista button[data-e]'); if (b) insertar(b.dataset.e); }
+    });
+    pintar('');
+    pan.addEventListener('mousedown', e => { if (!e.target.closest('.emo-buscar')) e.preventDefault(); });
     pan.addEventListener('click', e => { const b = e.target.closest('button[data-e]'); if (b) insertar(b.dataset.e); });
     document.body.appendChild(pan);
     document.addEventListener('mousedown', e => { if (pan.style.display === 'block' && !pan.contains(e.target) && !e.target.closest('.emo-btn')) pan.style.display = 'none'; });
@@ -109,8 +140,10 @@
     if (pan.style.display === 'block') { pan.style.display = 'none'; return; }
     const r = btn.getBoundingClientRect();
     pan.style.display = 'block';
+    const bus = pan.querySelector('.emo-buscar'); bus.value = ''; pintar('');
     pan.style.left = Math.max(6, Math.min(r.left, window.innerWidth - 310)) + 'px';
-    pan.style.top = (r.bottom + 4 + 300 > window.innerHeight ? Math.max(6, r.top - 290) : r.bottom + 4) + 'px';
+    pan.style.top = (r.bottom + 4 + 340 > window.innerHeight ? Math.max(6, r.top - 340) : r.bottom + 4) + 'px';
+    setTimeout(() => { try { bus.focus(); } catch (e) {} }, 0);
   };
   document.addEventListener('mousedown', e => { if (e.target.closest && e.target.closest('.emo-btn')) e.preventDefault(); });
 })();
@@ -188,14 +221,110 @@
   .faq p { font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
   @media (max-width: 720px) { .slide.on { flex-direction: column; } .slide .demo { flex: none; width: 100%; height: 230px; } .dots { display: none; } .tut-nav button { white-space: nowrap; } }
   @media (max-width: 600px) { .hdr span { display: none; } .kp { display: block; margin: 4px 0; } }
+</style>
+<style>
+  /* ================= v2.6 · Diseño negro iTech con logo y animaciones ================= */
+  :root { --negro:#000; --carbon:#0d0d0d; --grafito:#1a1a1a; --humo:#2a2a2a; --blanco:#fff; --gris-claro:#bdbdbd; }
+  html { background: #000; }
+  body { background: #000; color: #111; min-height: 100vh; }
+  body::before { content: ''; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+    background: radial-gradient(40% 35% at 20% 15%, rgba(255,255,255,.07), transparent 70%),
+                radial-gradient(35% 30% at 85% 30%, rgba(255,255,255,.05), transparent 70%),
+                radial-gradient(45% 40% at 50% 100%, rgba(255,255,255,.05), transparent 70%);
+    animation: deriva 18s ease-in-out infinite alternate; }
+  body::after { content: ''; position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .35;
+    background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+    background-size: 44px 44px; -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%); mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%); }
+  @keyframes deriva { from { transform: translate3d(-3%, -2%, 0) scale(1); } to { transform: translate3d(3%, 2%, 0) scale(1.08); } }
+
+  /* Encabezado */
+  .hdr { position: sticky; top: 0; z-index: 30; background: rgba(0,0,0,.82); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,.08); padding: 12px max(22px, calc((100vw - 980px) / 2 + 16px)); animation: bajaHdr .6s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes bajaHdr { from { transform: translateY(-100%); opacity: 0; } to { transform: none; opacity: 1; } }
+  .logo { text-decoration: none; position: relative; display: inline-flex; align-items: center; height: 40px; overflow: hidden; border-radius: 4px; }
+  .logo img { height: 40px; width: auto; display: block; filter: invert(1) grayscale(1) contrast(1.4); mix-blend-mode: screen; animation: logoEntra .9s cubic-bezier(.2,.8,.2,1) .15s both; }
+  .logo .txt-logo { display: none; font: 900 26px/1 Arial, sans-serif; letter-spacing: -.5px; color: #fff; animation: logoEntra .9s cubic-bezier(.2,.8,.2,1) .15s both; }
+  .logo .txt-logo small { display: block; font: 600 8px/1.4 Arial, sans-serif; letter-spacing: 2.5px; color: #bbb; text-align: center; }
+  .logo.sin-img img { display: none; } .logo.sin-img .txt-logo { display: block; }
+  .logo::after { content: ''; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; pointer-events: none;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.55), transparent); transform: skewX(-20deg); animation: brillo 5s ease-in-out 1.2s infinite; mix-blend-mode: overlay; }
+  @keyframes brillo { 0% { left: -60%; } 18%, 100% { left: 130%; } }
+  @keyframes logoEntra { from { opacity: 0; transform: translateY(8px) scale(.94); filter: blur(4px) invert(1); } to { opacity: 1; transform: none; } }
+  .hdr .sep { width: 1px; height: 26px; background: rgba(255,255,255,.18); }
+  .hdr span.sub-hdr { color: #9a9a9a; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+  .hdr .yo { color: #ddd; } .hdr .yo a { color: #fff; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,.35); }
+  .hdr .yo a:hover { border-bottom-color: #fff; }
+
+  /* Bienvenida */
+  .hero { max-width: 980px; margin: 0 auto; padding: 30px 16px 8px; color: #fff; position: relative; }
+  .hero h1 { margin: 0; font: 800 30px/1.15 Arial, sans-serif; letter-spacing: -.5px; }
+  .hero h1 .ola { display: inline-block; transform-origin: 70% 70%; animation: saluda 2.2s ease-in-out .8s 2; }
+  .hero p { margin: 8px 0 0; color: #a8a8a8; font-size: 15px; }
+  .hero .linea { height: 2px; width: 0; margin-top: 16px; background: linear-gradient(90deg, #fff, rgba(255,255,255,0)); animation: linea 1.2s cubic-bezier(.2,.8,.2,1) .5s forwards; }
+  @keyframes linea { to { width: 100%; } }
+  .hero .flota { position: absolute; right: 22px; top: 22px; font-size: 26px; opacity: .9; display: flex; gap: 14px; }
+  .hero .flota span { display: inline-block; animation: flota 3.4s ease-in-out infinite; filter: grayscale(1) brightness(1.6); }
+  .hero .flota span:nth-child(2) { animation-delay: .5s; } .hero .flota span:nth-child(3) { animation-delay: 1s; } .hero .flota span:nth-child(4) { animation-delay: 1.5s; }
+  @keyframes flota { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-9px) rotate(-6deg); } }
+  .entra { opacity: 0; animation: subir .7s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes subir { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* Pestañas */
+  .tabs { position: relative; max-width: 980px; margin: 14px auto 0; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1);
+    border-radius: 14px; padding: 5px; gap: 4px; }
+  .tabs button { position: relative; z-index: 1; color: #cfcfcf; border: 0; border-radius: 10px; padding: 10px 16px; font-size: 14px; transition: color .3s; }
+  .tabs button:hover { color: #fff; }
+  .tabs button.on { color: #000; border-bottom-color: transparent; }
+  .tabs .ind { position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 5px; width: 0; background: #fff; border-radius: 10px;
+    box-shadow: 0 6px 22px rgba(255,255,255,.18); transition: left .45s cubic-bezier(.3,1.3,.5,1), width .45s cubic-bezier(.3,1.3,.5,1); }
+
+  /* Contenido */
+  .wrap { padding-top: 18px; padding-bottom: 50px; }
+  .panel-on { animation: subir .5s cubic-bezier(.2,.8,.2,1); }
+  .card { border: 0; border-radius: 16px; padding: 16px 18px; box-shadow: 0 10px 30px rgba(0,0,0,.45); transition: transform .25s ease, box-shadow .25s ease; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.12); }
+  #p1 .card { opacity: 0; animation: subir .55s cubic-bezier(.2,.8,.2,1) forwards; }
+  #p1 .card:nth-child(1) { animation-delay: .05s; } #p1 .card:nth-child(2) { animation-delay: .12s; } #p1 .card:nth-child(3) { animation-delay: .19s; }
+  #p1 .card:nth-child(4) { animation-delay: .26s; } #p1 .card:nth-child(5) { animation-delay: .33s; } #p1 .card:nth-child(n+6) { animation-delay: .4s; }
+  .vacio { color: #a8a8a8; } .vacio b { color: #fff; } .vacio .spin { border-color: #444; border-top-color: #fff; }
+  .tut, .faq details { border: 0; box-shadow: 0 10px 30px rgba(0,0,0,.45); }
+  .faq h3, .wrap > div > h3 { color: #fff; }
+  button { transition: transform .15s ease, box-shadow .2s ease, background .2s ease; }
+  button:active { transform: scale(.97); }
+  button.primary { position: relative; overflow: hidden; background: #000; border-color: #000; }
+  button.primary:hover { box-shadow: 0 8px 22px rgba(0,0,0,.35); transform: translateY(-1px); }
+  button.primary::after { content: ''; position: absolute; top: 0; bottom: 0; left: -70%; width: 50%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent); transform: skewX(-20deg); }
+  button.primary:hover::after { animation: brilloBtn .8s ease; } @keyframes brilloBtn { to { left: 130%; } }
+  .tpl { transition: transform .2s ease, box-shadow .2s ease, border-color .2s; } .tpl:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.1); }
+  .bar i { transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+  .modal { background: rgba(0,0,0,.7); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  .modal .box { animation: subir .35s cubic-bezier(.2,.8,.2,1); box-shadow: 0 30px 80px rgba(0,0,0,.6); }
+  #msg .msg { animation: subir .35s ease; }
+  .pie { text-align: center; color: #666; font-size: 12px; padding: 0 16px 26px; letter-spacing: 1px; }
+  @media (max-width: 600px) { .hero h1 { font-size: 24px; } .hero .flota { display: none; } .hdr { padding: 10px 14px; } .hdr .sep, .hdr span.sub-hdr { display: none; } .tabs { margin: 12px 12px 0; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 </style></head>
 <body>
-  <div class="hdr"><b>iTECH</b><span>Portal de campañas</span><div class="yo"><b id="yo" style="font-size:13px;letter-spacing:0"></b> · <a href="#" onclick="tab(4);return false" style="color:#fff">🎓 Ayuda</a></div></div>
+  <div class="hdr">
+    <a class="logo" id="logo" href="https://itechgroup.com.ar" target="_blank" title="iTech">
+      <img id="logoImg" src="https://itechgroup.com.ar/img/my-shop-logo-1623431478.jpg" alt="iTech" onerror="document.getElementById('logo').classList.add('sin-img')">
+      <span class="txt-logo">iTech<small>FIX &amp; ACCESORIES</small></span>
+    </a>
+    <div class="sep"></div><span class="sub-hdr">Portal de campañas</span>
+    <div class="yo"><b id="yo" style="font-size:13px;letter-spacing:0"></b> · <a href="#" onclick="tab(4);return false">🎓 Ayuda</a></div>
+  </div>
+  <div class="hero">
+    <h1 class="entra" style="animation-delay:.2s"><span id="saludo">¡Hola!</span> <span class="ola">👋</span></h1>
+    <p class="entra" style="animation-delay:.35s">¿Qué le mandamos hoy a los clientes de iTech?</p>
+    <div class="flota" aria-hidden="true"><span>📨</span><span>🎁</span><span>📱</span><span>🚀</span></div>
+    <div class="linea"></div>
+  </div>
   <div class="tabs">
     <button id="t1" class="on" onclick="tab(1)">📨 Campañas</button>
     <button id="t2" onclick="tab(2)">➕ Nueva campaña</button>
     <button id="t3" onclick="tab(3)">✍️ Firma de los mails</button>
     <button id="t4" onclick="tab(4)">🎓 Cómo se usa</button>
+    <span class="ind" id="tabInd"></span>
   </div>
   <div class="wrap">
     <div id="msg"></div>
@@ -246,7 +375,7 @@
           <div class="txt"><div class="ico">✏️</div><h2>Paso 1 · Nombre y asunto</h2>
             <p>Andá a <b>➕ Nueva campaña</b>.</p>
             <p><b>Nombre:</b> es solo para vos, para reconocerla (ej. "Navidad Palmas"). El cliente no lo ve.</p>
-            <p><b>Asunto:</b> es lo primero que ve el cliente en su bandeja. Corto, con el beneficio adelante y un emoji con el botón <b>😀</b>.</p>
+            <p><b>Asunto:</b> es lo primero que ve el cliente en su bandeja. Corto, con el beneficio adelante y un emoji con el botón <b>😀</b> (tiene buscador: escribí lo que buscás).</p>
             <div class="tip">💡 Si dejás el asunto vacío, se usa el que trae la plantilla.</div></div>
         </div>
 
@@ -273,7 +402,7 @@
             <p>Se abre el <b>editor</b>: a la izquierda los <b>bloques</b> (título, texto, imagen, botón) y a la derecha cómo queda.</p>
             <p>Tocá un bloque para cambiar el texto. Con <b>↑ ↓</b> lo movés, con <b>✕</b> lo sacás, con <b>+ Agregar bloque</b> sumás uno. Las fotos se suben con el botón <b>Subir</b>.</p>
             <p>Mirá la vista <b>Celular</b>: la mayoría lo lee ahí. Tocá <b>Guardar</b> y después <b>← Volver al portal</b>.</p>
-            <div class="tip">💡 <b>**así**</b> queda en negrita. El botón <b>😀 Emojis</b> pone un emoji donde estás escribiendo.</div></div>
+            <div class="tip">💡 <b>**así**</b> queda en negrita. El botón <b>😀 Emojis</b> pone un emoji donde estás escribiendo. Arriba tiene un <b>🔍 buscador</b>: escribí "regalo", "oferta" o "navidad" y te muestra los que van.</div></div>
         </div>
 
         <div class="slide">
@@ -347,7 +476,13 @@
     return new Promise((ok, ko) => google.script.run.withSuccessHandler(ok).withFailureHandler(e => ko(e)).portalCall(DATA.token, accion, args || []));
   }
   function aviso(t, tipo) { $('msg').innerHTML = t ? '<div class="msg ' + (tipo || 'ok') + '"></div>' : ''; if (t) { $('msg').firstChild.textContent = t; window.scrollTo(0, 0); } }
-  function tab(n) { [1, 2, 3, 4].forEach(i => { $('p' + i).style.display = i === n ? '' : 'none'; $('t' + i).classList.toggle('on', i === n); }); aviso(''); if (n === 4) tutIr(TUT); window.scrollTo(0, 0); }
+  function moverInd() { const b = document.querySelector('.tabs button.on'), ind = $('tabInd'); if (!b || !ind) return; ind.style.left = b.offsetLeft + 'px'; ind.style.width = b.offsetWidth + 'px'; }
+  function tab(n) {
+    [1, 2, 3, 4].forEach(i => { const p = $('p' + i); p.style.display = i === n ? '' : 'none'; p.classList.remove('panel-on'); $('t' + i).classList.toggle('on', i === n); });
+    void $('p' + n).offsetWidth; $('p' + n).classList.add('panel-on');
+    moverInd(); aviso(''); if (n === 4) tutIr(TUT); window.scrollTo(0, 0);
+  }
+  window.addEventListener('resize', moverInd); window.addEventListener('load', moverInd); setTimeout(moverInd, 50);
   /* ---- Tutorial ---- */
   let TUT = 0;
   const SLIDES = () => Array.from(document.querySelectorAll('#p4 .slide'));
@@ -371,6 +506,8 @@
   api('init').then(d => {
     INI = d;
     $('yo').textContent = 'Hola, ' + d.nombre;
+    if (d.nombre) $('saludo').textContent = '¡Hola, ' + String(d.nombre).split(' ')[0] + '!';
+    if (d.logo && d.logo !== $('logoImg').getAttribute('src')) { $('logo').classList.remove('sin-img'); $('logoImg').src = d.logo; }
     $('locs').innerHTML = '<label><input type="checkbox" class="loc" value="(Todos)"> <b>Todos</b></label>' + d.locales.map(l => '<label><input type="checkbox" class="loc" value="' + esc(l) + '"> ' + esc(l) + '</label>').join('');
     $('locs').onchange = e => { if (e.target.value === '(Todos)' && e.target.checked) document.querySelectorAll('.loc').forEach(x => { if (x !== e.target) x.checked = false; }); else if (e.target.checked) document.querySelector('.loc[value="(Todos)"]').checked = false; };
     pintarTpls(); pintarCampanias(d.campanias);
@@ -445,4 +582,5 @@
     api('firma', [$('fNombre').value, $('fTel').value, $('fWa').checked]).then(t => { aviso(t); $('fActual').textContent = 'Ahora: ' + $('fNombre').value + ' · ' + $('fTel').value; }).catch(e => aviso(e.message, 'err'));
   }
 </script>
+  <div class="pie">iTech · Fix &amp; Accesories</div>
 </body></html>
