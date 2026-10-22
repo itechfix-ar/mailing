@@ -682,6 +682,11 @@
   .trow.p-alta{box-shadow:inset 4px 0 0 #dc2626} .trow.p-media{box-shadow:inset 4px 0 0 #f59e0b} .trow.p-baja{box-shadow:inset 4px 0 0 #16a34a}
   .trow .venc{color:#dc2626;font-weight:700}
   .trow.picked{background:#eef2ff}
+  @media (max-width:640px){
+    .selbar>div{flex-wrap:wrap;gap:6px}
+    .selbar span{flex-basis:100%;padding:0 4px 2px}
+    .selbar button{flex:1;justify-content:center;padding:9px 6px}
+  }
   .meopt{margin-top:12px} .meopt .l{margin-top:0}
   .meopt .seg button{font-size:13px}
   .trow .cl{display:flex;align-items:center;gap:6px;flex-wrap:wrap} .trow .cl .badge{flex:none}
@@ -1127,7 +1132,7 @@ const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto'
 const DSEM = ['LUN','MAR','MIE','JUE','VIE','SAB','DOM'];
 const ES_DEMO = !(window.google && google.script && google.script.run);
 let ENTORNO = ''; try { ENTORNO = localStorage.getItem('tm_env') || ''; } catch (e) {}
-const WEB_VERSION = 'v1.9';
+const WEB_VERSION = 'v1.10';
 const LOGO_DEFECTO = 'https://itechgroup.com.ar/img/my-shop-logo-1623431478.jpg';
 const APP_WEB = 'trabajo';
 
