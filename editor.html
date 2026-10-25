@@ -62,7 +62,10 @@
 <style>
   .emo-btn { padding: 4px 8px; font-size: 15px; line-height: 1; border-color: var(--line); }
   .emo-pan { position: fixed; z-index: 9999; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,.18);
-    padding: 8px; width: 300px; display: none; }
+    padding: 8px; width: 300px; max-width: calc(100vw - 12px); display: none; }
+  .emo-pan .emo-buscar { width: 100%; padding: 7px 8px; border: 1px solid var(--line); border-radius: 6px; font: 13px Arial, sans-serif; margin-bottom: 4px; }
+  .emo-pan .emo-lista { max-height: 260px; overflow-y: auto; }
+  .emo-pan .emo-nada { font-size: 12px; color: var(--mut); padding: 10px 4px; }
   .emo-pan .g { display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; }
   .emo-pan button { border: 0; background: none; font-size: 20px; padding: 4px 0; cursor: pointer; border-radius: 4px; }
   .emo-pan button:hover { background: var(--bg); }
@@ -74,16 +77,18 @@
 <script>
 /* Emojis: botón 😀 junto a un campo, o en el editor, inserta en el último campo de texto donde estabas escribiendo. */
 (function () {
+  /* [grupo, 'emoji palabras clave; emoji palabras clave; ...'] — el buscador busca en las palabras (sin tildes). */
   const GRUPOS = [
-    ['Promos', '🔥 💥 💸 🏷️ 🛍️ 🎁 🎉 🥳 ⭐ ✨ ⚡ 💯 🆕 ⏰ ‼️ 📣'],
-    ['Celulares', '📱 🔋 🔌 🎧 🛡️ 📦 🚚 🔧 💡 📸 ⌚ 💻'],
-    ['Fechas', '💐 🌷 🌸 🎀 ❤️ 💕 🤍 👩 👨 👶 🎄 🎅 ☀️ 🏖️ 🎓 🏆'],
-    ['Caras y manos', '👋 🙌 👏 💪 👉 👇 ✅ 😍 🤩 😉 😊 🙂 👀 🤔 🙏 ➡️ 📍']
+    ['Promos', '🔥 fuego hot sale oferta caliente; 💥 explosion impacto boom; 💸 plata dinero ahorro descuento; 💰 dinero plata bolsa; 💵 efectivo billete dolar plata; 💳 tarjeta cuotas pago credito debito; 🏷️ etiqueta precio oferta liquidacion; 🛍️ compras bolsa shopping; 🛒 carrito compra super; 🎁 regalo sorpresa obsequio; 🎉 fiesta festejo celebrar promo; 🥳 fiesta cumple celebrar; 🎊 confeti fiesta celebrar; ⭐ estrella destacado favorito; 🌟 estrella brillo destacado; ✨ brillo nuevo especial magia; ⚡ rayo rapido carga energia flash; 💯 cien perfecto total; 🆕 nuevo novedad; 🆓 gratis free; 🔝 top mejor arriba; ⏰ reloj alarma tiempo hoy urgente; ⏳ tiempo reloj arena espera ultimo; ‼️ atencion importante; ❗ atencion importante exclamacion; 📣 anuncio megafono aviso; 📢 anuncio altavoz aviso; 🚨 alerta urgente sirena; 👑 corona rey premium vip; 💎 diamante premium lujo vip; 🏆 trofeo ganador premio mejor; 🥇 medalla primero oro mejor; 🎯 objetivo diana punteria; 🔖 marcador etiqueta'],
+    ['Celulares y tech', '📱 celular telefono movil iphone samsung; 📲 celular llamada mensaje; ☎️ telefono llamada; 📞 telefono llamada; 🔋 bateria carga pila; 🪫 bateria baja descargada; 🔌 enchufe cable cargador; 🎧 auriculares musica audio; 🎵 musica nota cancion; 🎶 musica notas; 🔊 parlante sonido volumen; 🔇 silencio mute; 🛡️ escudo proteccion seguro vidrio funda; 📦 caja paquete envio pedido; 🚚 envio camion delivery entrega; 🔧 herramienta reparacion servicio tecnico llave; 🛠️ herramientas reparacion servicio tecnico; 🪛 destornillador reparacion; 💡 idea luz tip consejo; 📸 camara foto; 📷 camara foto; 🎥 video camara filmar; ⌚ reloj smartwatch; 💻 notebook computadora laptop pc; 🖥️ computadora monitor pc; ⌨️ teclado; 🖱️ mouse raton; 🎮 juego gamer joystick consola; 🕹️ joystick gamer juego; 🧲 iman magsafe magnetico; 📡 senal antena wifi; 🛜 wifi internet conexion; 📶 senal señal cobertura; 🔒 candado seguridad privado; 🔑 llave clave acceso; 🔍 lupa buscar; 🧾 ticket factura recibo; 📍 ubicacion local mapa pin; 🗺️ mapa ubicacion; 🏬 local tienda shopping negocio; 🏪 local tienda negocio; 🚗 auto coche manejar; 🚲 bici bicicleta'],
+    ['Fechas', '💐 flores ramo madre regalo; 🌷 flor tulipan primavera; 🌸 flor primavera cerezo; 🌹 rosa flor amor; 🌻 girasol flor verano; 🎀 moño lazo regalo; ❤️ corazon amor rojo; 💕 corazones amor; 💘 corazon flecha san valentin amor; 💖 corazon brillo amor; 🤍 corazon blanco; 🖤 corazon negro black friday; 💙 corazon azul; 👩 mujer madre mama; 👨 hombre padre papa; 👵 abuela; 👴 abuelo; 👶 bebe nino; 🧸 oso peluche nino juguete; 🎈 globo cumple fiesta nino; 🎂 torta cumpleanos cumple; 🍰 torta postre; 🎄 arbol navidad; 🎅 papa noel navidad; 🤶 mama noel navidad; ⛄ muñeco nieve invierno; ❄️ nieve invierno frio; ☀️ sol verano calor; 🏖️ playa verano vacaciones; 🌊 ola mar playa; 🧳 valija viaje vacaciones; ✈️ avion viaje vacaciones; 🎓 graduacion egresado estudiante; 🎒 mochila escuela colegio clases; 📚 libros escuela estudio maestro; ✏️ lapiz escuela; 🍎 manzana maestro; 🎃 calabaza halloween; 👻 fantasma halloween susto; 🐰 conejo pascuas; 🥚 huevo pascuas; 🥂 brindis copas año nuevo; 🍾 champagne festejo brindis; 🎆 fuegos artificiales año nuevo; 🎭 mascaras carnaval teatro; 🇦🇷 argentina bandera patria; ⚽ futbol pelota mundial; 🏆 copa trofeo campeon; 🤝 amigos acuerdo dia del amigo; 🧉 mate argentina; 🥩 asado carne; 🍕 pizza; ☕ cafe'],
+    ['Caras y manos', '👋 hola saludo mano; 🙌 manos festejo genial; 👏 aplausos bravo; 💪 fuerza musculo; 👍 ok bien pulgar like; 👌 ok perfecto; ✌️ paz dos victoria; 🤞 dedos suerte; 🫶 corazon manos amor; 🙏 gracias por favor rezar; 👉 señalar derecha aca; 👈 señalar izquierda; 👇 abajo señalar aca; 👆 arriba señalar; ✅ ok listo check hecho; ☑️ check listo; ❌ no error cruz; 😍 enamorado amor ojos; 🤩 estrellas wow increible; 😉 guiño; 😊 sonrisa feliz contento; 🙂 sonrisa; 😀 sonrisa feliz cara; 😃 feliz alegre; 😁 sonrisa dientes; 😂 risa llorar risa; 🤣 risa carcajada; 😎 lentes canchero cool; 🥰 amor carino; 😘 beso; 🤗 abrazo; 😅 risa nervios uy; 😮 sorpresa wow; 😱 sorpresa susto miedo; 🤯 explota cabeza increible; 🥺 por favor tierno; 😢 triste llorar; 🤔 pensar duda; 🤫 silencio secreto; 👀 ojos mirar ver; 💬 mensaje chat burbuja; ➡️ flecha derecha siguiente; ⬇️ flecha abajo; ⬆️ flecha arriba; 🔜 pronto soon; 🔥 fuego'],
+    ['Símbolos', '1️⃣ uno numero; 2️⃣ dos numero; 3️⃣ tres numero; 4️⃣ cuatro numero; 5️⃣ cinco numero; 🔟 diez numero; 💲 precio dolar signo; ➕ mas suma; ➖ menos; ✖️ por multiplicar; 🟢 verde circulo; 🔴 rojo circulo; 🔵 azul circulo; ⚫ negro circulo; ⚪ blanco circulo; ▶️ play reproducir; ⏩ rapido adelante; 🔁 repetir renovar; 🔄 actualizar cambiar; ♻️ reciclar; ⚠️ advertencia cuidado atencion; ℹ️ informacion info; ❓ pregunta duda; ❔ pregunta; 📅 calendario fecha dia; 🗓️ calendario fecha; 🕐 hora reloj; 📌 chinche fijar importante; 📎 clip adjunto; ✉️ sobre mail correo; 📧 mail correo email; 📩 mail correo recibir; 💌 carta amor mail; 🌐 web internet mundo; 🔗 link enlace; 🆗 ok; 🆙 up arriba; 🚀 cohete lanzamiento rapido; 🌈 arcoiris colores']
   ];
   let ultimo = null, fijo = null, pan = null;
   document.addEventListener('focusin', e => {
     const t = e.target;
-    if (t && !t.disabled && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text'))) ultimo = t;
+    if (t && !t.disabled && !(t.classList && t.classList.contains('emo-buscar')) && (t.tagName === 'TEXTAREA' || (t.tagName === 'INPUT' && t.type === 'text'))) ultimo = t;
   });
   function insertar(em) {
     const el = fijo || ultimo;
@@ -93,11 +98,37 @@
     el.focus(); el.selectionStart = el.selectionEnd = a + em.length;
     el.dispatchEvent(new Event('input', { bubbles: true }));
   }
+  const sinTilde = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
+  const ITEMS = [];
+  GRUPOS.forEach(g => g[1].split(';').forEach(x => {
+    const p = x.trim().split(/\s+/); if (!p[0]) return;
+    ITEMS.push({ e: p[0], g: g[0], k: sinTilde(g[0] + ' ' + p.slice(1).join(' ')) });
+  }));
+  const boton = e => '<button type="button" data-e="' + e + '" title="' + e + '">' + e + '</button>';
+  function pintar(q) {
+    const lista = pan.querySelector('.emo-lista');
+    const w = sinTilde(q).trim().split(/\s+/).filter(Boolean);
+    if (!w.length) {
+      lista.innerHTML = GRUPOS.map(g => '<div class="t">' + g[0] + '</div><div class="g">' +
+        ITEMS.filter(i => i.g === g[0]).map(i => boton(i.e)).join('') + '</div>').join('');
+      return;
+    }
+    const vistos = {};
+    const hall = ITEMS.filter(i => w.every(p => i.k.indexOf(p) >= 0) && !vistos[i.e] && (vistos[i.e] = 1));
+    lista.innerHTML = hall.length ? '<div class="t">Resultados (' + hall.length + ')</div><div class="g">' + hall.map(i => boton(i.e)).join('') + '</div>'
+      : '<div class="emo-nada">No encontré emojis con "' + q.replace(/[<>&"]/g, '') + '". Probá con otra palabra (ej: regalo, celular, navidad, oferta).</div>';
+  }
   function armar() {
     pan = document.createElement('div'); pan.className = 'emo-pan';
-    pan.innerHTML = GRUPOS.map(g => '<div class="t">' + g[0] + '</div><div class="g">' +
-      g[1].split(' ').map(e => '<button type="button" data-e="' + e + '">' + e + '</button>').join('') + '</div>').join('');
-    pan.addEventListener('mousedown', e => e.preventDefault());
+    pan.innerHTML = '<input type="text" class="emo-buscar" placeholder="🔍 Buscar emoji (ej: regalo, oferta, navidad)" autocomplete="off"><div class="emo-lista"></div>';
+    const bus = pan.querySelector('.emo-buscar');
+    bus.addEventListener('input', () => pintar(bus.value));
+    bus.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { pan.style.display = 'none'; }
+      if (e.key === 'Enter') { e.preventDefault(); const b = pan.querySelector('.emo-lista button[data-e]'); if (b) insertar(b.dataset.e); }
+    });
+    pintar('');
+    pan.addEventListener('mousedown', e => { if (!e.target.closest('.emo-buscar')) e.preventDefault(); });
     pan.addEventListener('click', e => { const b = e.target.closest('button[data-e]'); if (b) insertar(b.dataset.e); });
     document.body.appendChild(pan);
     document.addEventListener('mousedown', e => { if (pan.style.display === 'block' && !pan.contains(e.target) && !e.target.closest('.emo-btn')) pan.style.display = 'none'; });
@@ -109,8 +140,10 @@
     if (pan.style.display === 'block') { pan.style.display = 'none'; return; }
     const r = btn.getBoundingClientRect();
     pan.style.display = 'block';
+    const bus = pan.querySelector('.emo-buscar'); bus.value = ''; pintar('');
     pan.style.left = Math.max(6, Math.min(r.left, window.innerWidth - 310)) + 'px';
-    pan.style.top = (r.bottom + 4 + 300 > window.innerHeight ? Math.max(6, r.top - 290) : r.bottom + 4) + 'px';
+    pan.style.top = (r.bottom + 4 + 340 > window.innerHeight ? Math.max(6, r.top - 340) : r.bottom + 4) + 'px';
+    setTimeout(() => { try { bus.focus(); } catch (e) {} }, 0);
   };
   document.addEventListener('mousedown', e => { if (e.target.closest && e.target.closest('.emo-btn')) e.preventDefault(); });
 })();
